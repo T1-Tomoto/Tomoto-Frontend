@@ -31,7 +31,7 @@ fun Settings(
         SettingsItem(title = "음악 설정") {
             navController.navigate("MusicList")
         }
-
+        //dkdkssudgktpdy
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
             color = MaterialTheme.colorScheme.outline
