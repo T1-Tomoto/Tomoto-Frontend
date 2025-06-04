@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,14 +27,19 @@ import com.example.tomoto.R
 
 @Composable
 fun SettingsUserInfo(onClick: () -> Unit) {
-
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp)
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.img1),
                 contentDescription = "User Image",
@@ -41,11 +50,12 @@ fun SettingsUserInfo(onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text("홍길동", style = MaterialTheme.typography.titleMedium)
-                Text("<레벨 정보>", style = MaterialTheme.typography.bodySmall)
+                Text("🔥 Lv.12 탐험가", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
 }
+
 
 @Preview
 @Composable
