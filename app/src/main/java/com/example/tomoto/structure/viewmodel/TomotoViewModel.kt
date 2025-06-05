@@ -20,9 +20,6 @@ data class StudySession(
 )
 
 class TomotoViewModel : ViewModel() {
-
-
-
     // ToDo 리스트 데이터
     private val _allTasks = mutableStateListOf<ToDoItem>()
     val allTasks: SnapshotStateList<ToDoItem> get() = _allTasks
