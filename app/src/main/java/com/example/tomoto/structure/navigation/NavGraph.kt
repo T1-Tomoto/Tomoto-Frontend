@@ -12,7 +12,7 @@ import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
 import com.example.tomoto.structure.bottombarcontents.timer.Timer
 import com.example.tomoto.structure.bottombarcontents.todolist.TodoList
 import com.example.tomoto.structure.model.Routes
-import com.example.tomoto.structure.viewmodel.TomotoViewModel
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel) {
@@ -29,7 +29,7 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
                 navController = navController
             )
         }
-        composable(Routes.UserInfo.route) { UserInfoScreen(navController) }
+        composable(Routes.UserInfo.route) { UserInfoScreen(navController, tomotoViewModel) }
         composable(Routes.MusicList.route) { MusicListScreen(navController, tomotoViewModel) }
         composable(Routes.ChallengeList.route) { ChallengeListScreen(navController, tomotoViewModel) }
     }

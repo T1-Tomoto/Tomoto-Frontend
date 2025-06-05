@@ -24,9 +24,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tomoto.R
+import com.example.tomoto.structure.model.UserLevelState
 
 @Composable
-fun SettingsUserInfo(onClick: () -> Unit) {
+fun SettingsUserInfo(UserName:String="Non", UserLevel: UserLevelState? = null, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +50,7 @@ fun SettingsUserInfo(onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text("홍길동", style = MaterialTheme.typography.titleMedium)
+                Text("$UserName", style = MaterialTheme.typography.titleMedium)
                 Text("🔥 Lv.12 탐험가", style = MaterialTheme.typography.bodySmall)
             }
         }

@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tomoto.structure.model.Routes
 import com.example.tomoto.structure.navigation.BottomNavigationBar
 import com.example.tomoto.structure.navigation.NavGraph
-import com.example.tomoto.structure.viewmodel.TomotoViewModel
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

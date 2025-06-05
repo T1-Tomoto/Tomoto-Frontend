@@ -1,4 +1,4 @@
-package com.example.tomoto.structure.viewmodel
+package com.example.tomoto.structure.datastructures
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
@@ -13,6 +13,7 @@ val Context.dataStore by preferencesDataStore(name = "tomoto_prefs")
 
 object ChallengePrefs {
     private val RESET_DATE_KEY = stringPreferencesKey("daily_challenge_reset_date")
+    private val DAILY_STATES_KEY = stringPreferencesKey("daily_challenge_states")
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
 
     suspend fun shouldResetDaily(context: Context): Boolean {
@@ -27,4 +28,18 @@ object ChallengePrefs {
             prefs[RESET_DATE_KEY] = LocalDate.now().format(formatter)
         }
     }
+
+    suspend fun saveDailyStates(context: Context, states: List<Boolean>) {
+        val value = states.joinToString(",") { it.toString() }
+        context.dataStore.edit { prefs ->
+            prefs[DAILY_STATES_KEY] = value
+        }
+    }
+
+    suspend fun loadDailyStates(context: Context): List<Boolean> {
+        val prefs = context.dataStore.data.first()
+        val value = prefs[DAILY_STATES_KEY] ?: return emptyList()
+        return value.split(",").map { it.toBooleanStrictOrNull() ?: false }
+    }
 }
+

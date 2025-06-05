@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.SettingsItem
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.SettingsUserInfo
-import com.example.tomoto.structure.viewmodel.TomotoViewModel
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @Composable
 fun Settings(
@@ -25,7 +25,7 @@ fun Settings(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        SettingsUserInfo(onClick = { navController.navigate("UserInfo") })
+        SettingsUserInfo(UserName = tomotoViewModel.userName, onClick = { navController.navigate("UserInfo") })
 
         Spacer(modifier = Modifier.height(24.dp))
 
