@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.tomoto.structure.auth.LoginScreen
 import com.example.tomoto.structure.auth.SignupScreen
+import com.example.tomoto.structure.auth.token.TokenManager
 import com.example.tomoto.structure.bottombarcontents.rank.Rank
 import com.example.tomoto.structure.bottombarcontents.settings.ChallengeListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.MusicListScreen
@@ -15,6 +16,7 @@ import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
 import com.example.tomoto.structure.bottombarcontents.timer.Timer
 import com.example.tomoto.structure.bottombarcontents.todolist.TodoList
 import com.example.tomoto.structure.data.ServicePool
+import com.example.tomoto.structure.data.dto.request.UserLoginReq
 import com.example.tomoto.structure.data.dto.request.UserRegisterReq
 import com.example.tomoto.structure.model.Routes
 import com.example.tomoto.structure.viewmodel.TomotoViewModel
@@ -32,9 +34,25 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
         composable(Routes.Login.route) {
             LoginScreen(
                 onLoginClick = { id, pw ->
-                    // TODO: 로그인 검증 로직 추가
-                    navController.navigate(Routes.Timer.route) {
-                        popUpTo(Routes.Login.route) { inclusive = true }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val res = ServicePool.userService.login(
+                                UserLoginReq(id, pw)
+                            )
+                            Log.d("login", "accessToken = ${res.accessToken}")
+
+                            // ✅ 토큰 저장
+                            TokenManager.setAccessToken(res.accessToken)
+
+                            // ✅ 다음 화면으로 이동
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(Routes.Timer.route) {
+                                    popUpTo(Routes.Login.route) { inclusive = true }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("login", "로그인 실패: ${e.message}")
+                        }
                     }
                 },
                 onSignupClick = {
@@ -43,35 +61,18 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
             )
         }
 
-        // 회원가입 화면
-//        composable(Routes.Signup.route) {
-//            SignupScreen(
-////                onSignupClick = { id, pw, nickname ->
-////                    // TODO: 회원가입 처리 후 로그인으로 이동
-////                    navController.navigate(Routes.Login.route) {
-////                        popUpTo(Routes.Signup.route) { inclusive = true }
-////                    }
-////                },
-//
-//                onBackToLogin = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
         composable(Routes.Signup.route) {
             SignupScreen(
                 onSignupClick = { id, pw, nickname ->
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val res = ServicePool.userService.signup(
-                                UserRegisterReq(id = id, password = pw, nickname = nickname)
+                                UserRegisterReq(id, pw, nickname)
                             )
-                            Log.d("signup", "AccessToken: ${res.accessToken}")
+                            Log.d("signup", "토큰: ${res.accessToken}")
 
                             withContext(Dispatchers.Main) {
-                                navController.navigate(Routes.Login.route) {
-                                    popUpTo(Routes.Signup.route) { inclusive = true }
-                                }
+                                navController.navigate(Routes.Login.route)
                             }
                         } catch (e: Exception) {
                             Log.e("signup", "회원가입 실패: ${e.message}")
