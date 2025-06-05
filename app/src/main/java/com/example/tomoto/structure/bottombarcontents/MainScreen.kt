@@ -53,8 +53,8 @@ fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
             }
         }
     ) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
-            NavGraph(navController, tomotoViewModel)
+        Box() {
+            NavGraph(navController, tomotoViewModel, paddingValues = contentPadding)
         }
     }
 }
