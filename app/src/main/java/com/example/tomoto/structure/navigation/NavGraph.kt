@@ -1,9 +1,12 @@
 package com.example.tomoto.structure.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.tomoto.structure.auth.LoginScreen
+import com.example.tomoto.structure.auth.SignupScreen
 import com.example.tomoto.structure.bottombarcontents.rank.Rank
 import com.example.tomoto.structure.bottombarcontents.settings.ChallengeListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.MusicListScreen
@@ -11,15 +14,75 @@ import com.example.tomoto.structure.bottombarcontents.settings.Settings
 import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
 import com.example.tomoto.structure.bottombarcontents.timer.Timer
 import com.example.tomoto.structure.bottombarcontents.todolist.TodoList
+import com.example.tomoto.structure.data.ServicePool
+import com.example.tomoto.structure.data.dto.request.UserRegisterReq
 import com.example.tomoto.structure.model.Routes
 import com.example.tomoto.structure.viewmodel.TomotoViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel) {
     NavHost(
         navController = navController,
-        startDestination = Routes.Timer.route
+        startDestination = Routes.Login.route
     ) {
+        composable(Routes.Login.route) {
+            LoginScreen(
+                onLoginClick = { id, pw ->
+                    // TODO: 로그인 검증 로직 추가
+                    navController.navigate(Routes.Timer.route) {
+                        popUpTo(Routes.Login.route) { inclusive = true }
+                    }
+                },
+                onSignupClick = {
+                    navController.navigate(Routes.Signup.route)
+                }
+            )
+        }
+
+        // 회원가입 화면
+//        composable(Routes.Signup.route) {
+//            SignupScreen(
+////                onSignupClick = { id, pw, nickname ->
+////                    // TODO: 회원가입 처리 후 로그인으로 이동
+////                    navController.navigate(Routes.Login.route) {
+////                        popUpTo(Routes.Signup.route) { inclusive = true }
+////                    }
+////                },
+//
+//                onBackToLogin = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
+        composable(Routes.Signup.route) {
+            SignupScreen(
+                onSignupClick = { id, pw, nickname ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val res = ServicePool.userService.signup(
+                                UserRegisterReq(id = id, password = pw, nickname = nickname)
+                            )
+                            Log.d("signup", "AccessToken: ${res.accessToken}")
+
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(Routes.Login.route) {
+                                    popUpTo(Routes.Signup.route) { inclusive = true }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("signup", "회원가입 실패: ${e.message}")
+                        }
+                    }
+                },
+                onBackToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable(Routes.Timer.route) { Timer(tomotoViewModel = tomotoViewModel) }
         composable(Routes.TodoList.route) { TodoList(tomotoViewModel = tomotoViewModel) }
         composable(Routes.Rank.route) { Rank() }
