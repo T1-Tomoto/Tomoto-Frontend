@@ -18,31 +18,26 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class TomotoViewModel : ViewModel() {
-
+    //db 필요
     val userName = "UserName"
     val userEmail = "tomoto@gmail.com"
     val totalPomodoro = 2
 
 //music 관련 데이터
-    var musicList = mutableStateListOf<String>()
-        private set
+    //db 필요
+var musicList = mutableStateListOf<String>()
+    private set
 
     fun addMusicUrl(url: String) {
-        if (url.isNotBlank()) {
-            musicList.add(url.trim())
-
-        }
+        MusicManager.addMusicUrl(musicList, url)
     }
 
     fun removeMusicUrl(url: String) {
-        musicList.remove(url)
+        MusicManager.removeMusicUrl(musicList, url)
     }
 
     fun editMusicUrl(oldUrl: String, newUrl: String) {
-        val index = musicList.indexOf(oldUrl)
-        if (index != -1 && newUrl.isNotBlank()) {
-            musicList[index] = newUrl.trim()
-        }
+        MusicManager.editMusicUrl(musicList, oldUrl, newUrl)
     }
 
 //challenge 관련 데이터
@@ -52,25 +47,24 @@ class TomotoViewModel : ViewModel() {
     var permanentChallenges = mutableStateListOf<Challenge>()
         private set
 
-    //영구 도전과제 리스트 - 데이터베이스에서 불러와 초기화 필요
+    //영구 도전과제 리스트
+    //DB 필요
     private val permanentChallengeStates = listOf(
         false, false, false, false, false,
         false, false, false, false, false, false, false, false
     )
 
-    private fun loadChallenges(
-        dailyStates: List<Boolean> = emptyList(),
-        permanentStates: List<Boolean> = emptyList()
-    ) {
+    private fun loadDailyChallenges(dailyStates: List<Boolean>) {
         val daily = ChallengeListFactory.getDailyChallenges()
-        val permanent = ChallengeListFactory.getPermanentChallenges()
-
         dailyChallenges.addAll(
             daily.mapIndexed { index, challenge ->
                 challenge.copy(isCompleted = dailyStates.getOrNull(index) ?: false)
             }
         )
+    }
 
+    private fun loadPermanentChallenges(permanentStates: List<Boolean>) {
+        val permanent = ChallengeListFactory.getPermanentChallenges()
         permanentChallenges.addAll(
             permanent.mapIndexed { index, challenge ->
                 challenge.copy(isCompleted = permanentStates.getOrNull(index) ?: false)
@@ -78,7 +72,8 @@ class TomotoViewModel : ViewModel() {
         )
     }
 
-    fun initialize(context: Context) {
+
+    fun initializeChallenges(context: Context) {
         viewModelScope.launch {
             val savedDailyStates = ChallengePrefs.loadDailyStates(context)
 
@@ -89,18 +84,16 @@ class TomotoViewModel : ViewModel() {
                 ChallengePrefs.updateResetDate(context)
                 ChallengePrefs.saveDailyStates(context, List(freshList.size) { false })
             } else {
-                loadChallenges(
-                    dailyStates = savedDailyStates,
-                    permanentStates = permanentChallengeStates
-                )
+                loadDailyChallenges(savedDailyStates)
             }
 
             if (permanentChallenges.isEmpty()) {
-                loadChallenges(permanentStates = permanentChallengeStates)
+                loadPermanentChallenges(permanentChallengeStates)
             }
         }
     }
 
+//유저 레벨 정보
     var userLevel = UserLevelState()
         private set
 
