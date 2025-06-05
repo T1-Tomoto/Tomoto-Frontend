@@ -1,9 +1,11 @@
 package com.example.tomoto.structure.bottombarcontents.settings.uiconponents
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -15,21 +17,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SettingsItem(title: String, onClick: () -> Unit) {
+fun SettingsItem(title: String, icon: String, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .height(56.dp)
+        ,
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Box(modifier = Modifier.padding(start = 16.dp), contentAlignment = Alignment.CenterStart) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(icon, modifier = Modifier.padding(end = 12.dp))
+            Text(title, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
+
+

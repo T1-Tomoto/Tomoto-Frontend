@@ -28,11 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tomoto.R
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.UserInfoTopAppBar
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserInfoScreen(
-    navController: NavHostController
+    navController: NavHostController, tomotoViewModel: TomotoViewModel
 ) {
     Scaffold(
         topBar = {
@@ -62,12 +63,12 @@ fun UserInfoScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "홍길동",
+                text = "${tomotoViewModel.userName}",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
 
             Text(
-                text = "hong@example.com",
+                text = "${tomotoViewModel.userEmail}",
                 style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
             )
 
