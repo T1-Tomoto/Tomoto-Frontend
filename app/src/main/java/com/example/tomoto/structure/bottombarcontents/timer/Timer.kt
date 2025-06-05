@@ -14,10 +14,9 @@ fun Timer(modifier: Modifier = Modifier, tomotoViewModel: TomotoViewModel) {
         modifier = Modifier.fillMaxSize()
     ) {
         Column {
-            tomotoViewModel.testchange.forEach{item ->
-                Text(item)
+           // tomotoViewModel.testchange.forEach{item ->
+             //   Text(item)
             }
         }
 
     }
-}

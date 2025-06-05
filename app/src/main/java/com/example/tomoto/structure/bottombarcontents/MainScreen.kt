@@ -3,6 +3,7 @@ package com.example.tomoto.structure.bottombarcontents
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,9 +20,9 @@ import com.example.tomoto.structure.viewmodel.TomotoViewModel
 @Composable
 fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
 
-    LaunchedEffect(Unit) {
-        tomotoViewModel.changingTest("changedText")
-    }
+    //LaunchedEffect(Unit) {
+      //  tomotoViewModel.changingTest("changedText")
+   // }
     val navController = rememberNavController()
     Scaffold(
         topBar = {
@@ -34,8 +35,8 @@ fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
         }
 
     ) { contentPadding ->
-        Column(modifier = Modifier.padding(contentPadding)) {
-            NavGraph(navController, tomotoViewModel)
+        Column() {
+            NavGraph(navController, tomotoViewModel, paddingValues = contentPadding)
         }
     }
 }
