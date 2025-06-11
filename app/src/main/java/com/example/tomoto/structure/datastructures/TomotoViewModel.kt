@@ -10,9 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pomato.UIcomponents.ToDoItem
-import com.example.tomoto.structure.bottombarcontents.todolist.StudySession
-import com.example.tomoto.structure.data.dto.response.AllUserRankRes
+import com.example.tomoto.structure.bottombarcontents.todolist.ToDoItem
 import com.example.tomoto.structure.data.dto.response.UserInfoRes
 import com.example.tomoto.structure.data.service.ServicePool
 import com.example.tomoto.structure.model.Challenge
@@ -23,7 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 
 class TomotoViewModel : ViewModel() {
 
