@@ -1,5 +1,6 @@
 package com.example.tomoto.structure.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,8 +15,9 @@ import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCal
 import com.example.tomoto.structure.datastructures.TomotoViewModel
 import com.example.tomoto.structure.model.Routes
 
+
 @Composable
-fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel) {
+fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel,paddingValues: PaddingValues) {
     NavHost(
         navController = navController,
         startDestination = Routes.Timer.route
