@@ -154,35 +154,43 @@ class TomotoViewModel : ViewModel() {
     private val _allTasks = mutableStateListOf<ToDoItem>()
     val allTasks: SnapshotStateList<ToDoItem> get() = _allTasks
 
-    // --- 공부 시간 관련 로직 ---
-    private val _studySessions = mutableStateListOf<StudySession>()
-    // val studySessions: SnapshotStateList<StudySession> get() = _studySessions // 필요시 공개
+    private val _pomoRecords = mutableStateListOf<Pair<LocalDate, Int>>()
 
-    val studyTimeData: State<Map<LocalDate, String>> = derivedStateOf {
-        _studySessions
-            .groupBy { it.date }
+    val pomoCountData: State<Map<LocalDate, Int>> = derivedStateOf {
+        _pomoRecords
+            .groupBy { it.first } // 날짜(첫 번째 값)로 그룹화
             .mapValues { entry ->
-                val totalSeconds = entry.value.sumOf { it.durationInSeconds }
-                formatSecondsToHHMM(totalSeconds)
+                // 각 날짜에 해당하는 모든 횟수(두 번째 값)를 합산합니다.
+                entry.value.sumOf { it.second }
             }
     }
 
-    fun addStudySession(date: LocalDate, durationInSeconds: Long) {
-        if (durationInSeconds > 0) {
-            _studySessions.add(StudySession(date = date, durationInSeconds = durationInSeconds))
-
+    // 횟수를 직접 추가하는 새 함수
+    fun addPomoCount(date: LocalDate, count: Int) {
+        if (count > 0) {
+            _pomoRecords.add(date to count)
         }
     }
 
-    private fun formatSecondsToHHMM(totalSeconds: Long): String {
-        val hours = TimeUnit.SECONDS.toHours(totalSeconds)
-        val minutes = TimeUnit.SECONDS.toMinutes(totalSeconds) % 60
-        return String.format("%02d:%02d", hours, minutes)
-    }
     // --- 공부 시간 관련 로직 끝 ---
 
     private val dueDateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
+    init {
+        loadInitialTasks()
+
+        // --- init 블록의 예시 데이터도 새 방식으로 변경 ---
+        // 이제 훨씬 깔끔하게 예시 데이터를 추가할 수 있습니다.
+        addPomoCount(LocalDate.of(2025, 5, 1), 5)
+        addPomoCount(LocalDate.of(2025, 5, 2), 8)
+        addPomoCount(LocalDate.of(2025, 5, 3), 3)
+        addPomoCount(LocalDate.of(2025, 5, 4), 10)
+        addPomoCount(LocalDate.of(2025, 5, 5), 2)
+        addPomoCount(LocalDate.of(2025, 5, 10), 12)
+        addPomoCount(LocalDate.of(2025, 5, 11), 7)
+        addPomoCount(LocalDate.of(2025, 5, 23), 4)
+        addPomoCount(LocalDate.of(2025, 5, 29), 10)
+    }
 
 
     private fun loadInitialTasks() {
