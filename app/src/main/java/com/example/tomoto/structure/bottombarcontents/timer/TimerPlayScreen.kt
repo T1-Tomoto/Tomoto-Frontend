@@ -1,9 +1,13 @@
 package com.example.tomoto.structure.bottombarcontents.timer
 
+import android.content.Context
+import android.webkit.WebView
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,24 +26,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.delay
 import com.example.tomoto.R
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @Composable
 fun TimerPlayScreen(
     taskName: String = "",
     pomoCount: Int = 0,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    viewModel: TomotoViewModel,
+    context: Context
 ) {
     var isPlaying by remember { mutableStateOf(true) }
     var showVolume by remember { mutableStateOf(true) }
 
-    val focusTime = 1 * 60  // 집중 시간 1분 (테스트용)
-    val restTime = 1 * 60   // 쉬는 시간 1분 (테스트용)
+    val focusTime = 1 * 60 / 10 // 실제로 25분
+    val restTime = 1 * 60 / 10 // 실제로 5분
+    val longRestTime = 1 * 60 / 6 // 실제로 30분
 
-    var currentPhase by remember { mutableStateOf("FOCUS") }  // FOCUS 또는 REST
-    var currentPomoIndex by remember { mutableStateOf(0) }    // 현재 몇 번째 반복인지
+    var currentPhase by remember { mutableStateOf("FOCUS") }
+    var currentPomoIndex by remember { mutableStateOf(0) }
     var timer by remember { mutableStateOf(focusTime) }
+
+    val musicUrl = viewModel.musicList.firstOrNull() ?: ""
 
     LaunchedEffect(isPlaying, currentPhase, currentPomoIndex) {
         while (isPlaying && currentPomoIndex < pomoCount) {
@@ -48,18 +59,17 @@ fun TimerPlayScreen(
 
             if (timer <= 0) {
                 if (currentPhase == "FOCUS") {
-                    // 집중 시간 끝.. 쉬는 시간 시작
+                    viewModel.incrementPomodoroAndEvaluate(context)
                     currentPhase = "REST"
-                    timer = restTime
+                    timer = if ((currentPomoIndex + 1) % 4 == 0) longRestTime else restTime
                 } else {
-                    // 쉬는 시간 끝.. 다음 뽀모도로
                     currentPomoIndex++
                     if (currentPomoIndex < pomoCount) {
                         currentPhase = "FOCUS"
                         timer = focusTime
                     } else {
-                        isPlaying = false  // 전체 끝
-                        // API 호출 가능: 뽀모도로 카운트 증가
+                        isPlaying = false
+                        onCancel()
                     }
                 }
             }
@@ -69,69 +79,61 @@ fun TimerPlayScreen(
     val minutes = timer / 60
     val seconds = timer % 60
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            IconButton(onClick = { showVolume = !showVolume }) {
-                Icon(
-                    painter = painterResource(
-                        if (showVolume) R.drawable.baseline_volume_up_24 else R.drawable.baseline_volume_off_24
-                    ),
-                    contentDescription = "Toggle Sound"
-                )
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 유튜브 WebView (뒤에 배치)
+        if (musicUrl.isNotBlank()) {
+            AndroidView(
+                modifier = Modifier.matchParentSize(),
+                factory = {
+                    WebView(it).apply {
+                        settings.javaScriptEnabled = true
+                        loadUrl(musicUrl.replace("watch?v=", "embed/") + "?autoplay=1&mute=${if (showVolume) 0 else 1}")
+                    }
+                }
+            )
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
-
+        // 타이머 UI
         Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "$taskName", fontSize = 20.sp, textAlign = TextAlign.Center)
-            Text(text = "Round ${currentPomoIndex + 1} of $pomoCount", fontSize = 14.sp)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = String.format("%02d:%02d", minutes, seconds),
-                fontSize = 36.sp
-            )
-            Text(
-                text = if (currentPhase == "FOCUS") "집중 시간" else "쉬는 시간",
-                fontSize = 16.sp
-            )
-        }
+            Spacer(modifier = Modifier.height(60.dp))
 
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = { isPlaying = !isPlaying },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-            ) {
-                Text(text = if (isPlaying) "PAUSE" else "RESUME", color = Color.Black)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                IconButton(onClick = { showVolume = !showVolume }) {
+                    Icon(
+                        painter = painterResource(
+                            if (showVolume) R.drawable.baseline_volume_up_24 else R.drawable.baseline_volume_off_24
+                        ),
+                        contentDescription = "Toggle Sound"
+                    )
+                }
             }
-            Button(
-                onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-            ) {
-                Text(text = "CANCEL", color = Color.Black)
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "$taskName", fontSize = 20.sp)
+                Text(text = "Round ${currentPomoIndex + 1} of $pomoCount", fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = String.format("%02d:%02d", minutes, seconds), fontSize = 36.sp)
+                Text(text = if (currentPhase == "FOCUS") "집중 시간" else "쉬는 시간", fontSize = 16.sp)
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { isPlaying = !isPlaying }) {
+                    Text(text = if (isPlaying) "PAUSE" else "RESUME")
+                }
+                Button(onClick = onCancel) {
+                    Text(text = "CANCEL")
+                }
             }
         }
     }
-}
-
-
-@Preview
-@Composable
-private fun TimerPlayPreview() {
-    TimerPlayScreen("모프 실습 완성하기") {  ->  }
 }

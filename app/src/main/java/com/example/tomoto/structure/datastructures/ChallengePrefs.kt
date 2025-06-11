@@ -15,6 +15,7 @@ object ChallengePrefs {
     private val RESET_DATE_KEY = stringPreferencesKey("daily_challenge_reset_date")
     private val DAILY_STATES_KEY = stringPreferencesKey("daily_challenge_states")
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private val TODAY_POMODORO_KEY = stringPreferencesKey("today_pomodoro_count")
 
     suspend fun shouldResetDaily(context: Context): Boolean {
         val prefs = context.dataStore.data.first()
@@ -40,6 +41,23 @@ object ChallengePrefs {
         val prefs = context.dataStore.data.first()
         val value = prefs[DAILY_STATES_KEY] ?: return emptyList()
         return value.split(",").map { it.toBooleanStrictOrNull() ?: false }
+    }
+
+    suspend fun resetTodayPomodoro(context: Context) {
+        context.dataStore.edit { prefs ->
+            prefs[TODAY_POMODORO_KEY] = "0"
+        }
+    }
+
+    suspend fun loadTodayPomodoro(context: Context): Int {
+        val prefs = context.dataStore.data.first()
+        return prefs[TODAY_POMODORO_KEY]?.toIntOrNull() ?: 0
+    }
+
+    suspend fun saveTodayPomodoro(context: Context, count: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[TODAY_POMODORO_KEY] = count.toString()
+        }
     }
 }
 

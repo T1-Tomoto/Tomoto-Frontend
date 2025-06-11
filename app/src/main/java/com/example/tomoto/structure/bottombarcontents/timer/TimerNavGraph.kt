@@ -1,19 +1,21 @@
 package com.example.tomoto.structure.bottombarcontents.timer
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @Composable
-fun TimerNavGraph() {
+fun TimerNavGraph(viewModel: TomotoViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "setting") {
         composable("setting") {
-            TimerSettingScreen { taskName, pomoCount ->
+            TimerSettingScreen(viewModel = viewModel) { taskName, pomoCount ->
                 navController.navigate("timer/$taskName/$pomoCount")
             }
         }
@@ -25,12 +27,14 @@ fun TimerNavGraph() {
                 navArgument("pomoCount") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val task = backStackEntry.arguments?.getString("taskName") ?: ""
+            val name = backStackEntry.arguments?.getString("taskName") ?: ""
             val count = backStackEntry.arguments?.getInt("pomoCount") ?: 0
             TimerPlayScreen(
-                taskName = task,
+                taskName = name,
                 pomoCount = count,
-                onCancel = { navController.popBackStack() }
+                onCancel = { navController.popBackStack() },
+                viewModel = viewModel,
+                context = LocalContext.current
             )
         }
     }
