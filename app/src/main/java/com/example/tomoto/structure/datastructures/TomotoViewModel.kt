@@ -25,10 +25,31 @@ class TomotoViewModel : ViewModel() {
     val userName = "UserName"
     val userEmail = "tomoto@gmail.com"
     val totalPomodoro = 2
+    var todayPomodoro = 0
     var introduce = "default introduce text1"
 
     fun updateIntroduce(newIntroduce : String){
         introduce = newIntroduce
+    }
+
+    fun incrementPomodoroAndEvaluate(context: Context) {
+        val newToday = todayPomodoro + 1
+        todayPomodoro = newToday
+
+        // 저장
+        viewModelScope.launch {
+            ChallengePrefs.saveTodayPomodoro(context, newToday)
+        }
+
+        // 도전 과제 평가
+        evaluateDailyChallenges(context, pomodoroCount = newToday)
+        evaluatePermanentChallenges(
+            pomodoroTotal = totalPomodoro, // 여기는 total 기준으로 나중에 바뀔 예정
+            timerStreak = 0,
+            totalCompleted = dailyChallenges.count { it.isCompleted } + permanentChallenges.count { it.isCompleted }
+        )
+
+        // TODO: 서버에 totalPomodoro 1 증가 요청 API 호출 예정
     }
 
 //music 관련 데이터
@@ -90,8 +111,12 @@ class TomotoViewModel : ViewModel() {
                 dailyChallenges.addAll(freshList)
                 ChallengePrefs.updateResetDate(context)
                 ChallengePrefs.saveDailyStates(context, List(freshList.size) { false })
+
+                todayPomodoro = 0
+                ChallengePrefs.resetTodayPomodoro(context)
             } else {
                 loadDailyChallenges(savedDailyStates)
+                todayPomodoro = ChallengePrefs.loadTodayPomodoro(context) // 오늘값 불러오기
             }
 
             if (permanentChallenges.isEmpty()) {
