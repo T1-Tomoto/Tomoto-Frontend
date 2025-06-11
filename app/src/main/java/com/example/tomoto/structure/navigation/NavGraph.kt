@@ -25,7 +25,7 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
         navController = navController,
         startDestination = Routes.Timer.route
     ) {
-        composable(Routes.Timer.route) { TimerNavGraph() }
+        composable(Routes.Timer.route) { TimerNavGraph(viewModel=tomotoViewModel) }
         composable(Routes.TodoList.route) { ToDoScreenWithCalendarComposable2(tomotoViewModel = tomotoViewModel) }
         composable(Routes.Rank.route) { MainScreenFriend() }
         composable(Routes.Settings.route) {
