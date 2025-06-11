@@ -16,7 +16,6 @@ import com.example.tomoto.structure.bottombarcontents.settings.ChallengeListScre
 import com.example.tomoto.structure.bottombarcontents.settings.MusicListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.Settings
 import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
-import com.example.tomoto.structure.data.ServicePool
 import com.example.tomoto.structure.data.dto.request.UserLoginReq
 import com.example.tomoto.structure.data.dto.request.UserRegisterReq
 import com.example.tomoto.structure.model.Routes
@@ -26,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.tomoto.structure.bottombarcontents.timer.TimerNavGraph
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCalendarComposable2
+import com.example.tomoto.structure.data.service.ServicePool
 import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 
