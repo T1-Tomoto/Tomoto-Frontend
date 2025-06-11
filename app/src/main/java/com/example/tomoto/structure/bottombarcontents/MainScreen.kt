@@ -1,6 +1,7 @@
 package com.example.tomoto.structure.bottombarcontents
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -14,10 +15,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 import com.example.tomoto.structure.model.Routes
 import com.example.tomoto.structure.navigation.BottomNavigationBar
 import com.example.tomoto.structure.navigation.NavGraph
-import com.example.tomoto.structure.viewmodel.TomotoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,21 +40,23 @@ fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        tomotoViewModel.initialize(context)
+        tomotoViewModel.initializeChallenges(context)
     }
     Scaffold(
         topBar = {
             if (!isFullScreen) {
                 TopAppBar(title = { Text("Tomoto") })
-            }
-        },
-        bottomBar = {
+            }   },
+
+   bottomBar = {
             if (!isFullScreen) {
                 BottomNavigationBar(navController)
             }
         }
     ) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(contentPadding)) {
             NavGraph(navController, tomotoViewModel)
         }
     }

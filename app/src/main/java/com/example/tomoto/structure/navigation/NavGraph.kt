@@ -1,6 +1,7 @@
 package com.example.tomoto.structure.navigation
 
 import android.util.Log
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,6 +9,8 @@ import androidx.navigation.compose.composable
 import com.example.tomoto.structure.auth.LoginScreen
 import com.example.tomoto.structure.auth.SignupScreen
 import com.example.tomoto.structure.auth.token.TokenManager
+import com.example.tomoto.structure.bottombarcontents.rank.FriendNavGraph
+import com.example.tomoto.structure.bottombarcontents.rank.MainScreenFriend
 import com.example.tomoto.structure.bottombarcontents.rank.Rank
 import com.example.tomoto.structure.bottombarcontents.settings.ChallengeListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.MusicListScreen
@@ -24,6 +27,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.tomoto.structure.bottombarcontents.timer.TimerNavGraph
+import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCalendarComposable2
+import com.example.tomoto.structure.datastructures.TomotoViewModel
+import com.example.tomoto.structure.model.Routes
+
 
 @Composable
 fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel) {
@@ -31,6 +39,7 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
         navController = navController,
         startDestination = Routes.Login.route
     ) {
+
         composable(Routes.Login.route) {
             LoginScreen(
                 onLoginClick = { id, pw ->
@@ -84,16 +93,18 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
                 }
             )
         }
-        composable(Routes.Timer.route) { Timer(tomotoViewModel = tomotoViewModel) }
-        composable(Routes.TodoList.route) { TodoList(tomotoViewModel = tomotoViewModel) }
-        composable(Routes.Rank.route) { Rank() }
+
+        composable(Routes.Timer.route) { TimerNavGraph(viewModel=tomotoViewModel) }
+        composable(Routes.TodoList.route) { ToDoScreenWithCalendarComposable2(tomotoViewModel = tomotoViewModel) }
+        composable(Routes.Rank.route) { MainScreenFriend() }
+
         composable(Routes.Settings.route) {
             Settings(
                 tomotoViewModel = tomotoViewModel,
                 navController = navController
             )
         }
-        composable(Routes.UserInfo.route) { UserInfoScreen(navController) }
+        composable(Routes.UserInfo.route) { UserInfoScreen(navController, tomotoViewModel) }
         composable(Routes.MusicList.route) { MusicListScreen(navController, tomotoViewModel) }
         composable(Routes.ChallengeList.route) { ChallengeListScreen(navController, tomotoViewModel) }
     }

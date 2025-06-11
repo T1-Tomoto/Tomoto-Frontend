@@ -26,7 +26,7 @@ import androidx.navigation.NavHostController
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.AddMusicDialog
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.MusicCard
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.UserInfoTopAppBar
-import com.example.tomoto.structure.viewmodel.TomotoViewModel
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @Composable
 fun MusicListScreen(navController : NavHostController, tomotoViewModel:TomotoViewModel) {
