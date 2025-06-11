@@ -33,7 +33,7 @@ import java.time.YearMonth
 @Composable
 fun MonthlyCalendarWithStudyTimeComposable(
     yearMonth: YearMonth,
-    studyData: Map<LocalDate, String>, // 날짜별 공부 시간 데이터
+    pomoData: Map<LocalDate, Int>, //뽀모도로로
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
@@ -54,7 +54,7 @@ fun MonthlyCalendarWithStudyTimeComposable(
     // 현재 달의 날짜 채우기
     for (day in 1..daysInMonth) {
         val date = yearMonth.atDay(day)
-        days.add(DayStudyData(day, date, studyData[date], true, date == selectedDate))
+        days.add(DayStudyData(day, date, pomoData[date], true, date == selectedDate))
     }
 
     // 다음 달의 날짜 채우기 (총 6주 = 42칸 기준)
@@ -100,38 +100,30 @@ fun DayCellComposable(
     dayData: DayStudyData,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val studyMinutes = parseStudyTimeToMinutes(dayData.studyTime)
+    // 1. 뽀모도로 횟수를 가져옵니다.
+    val pomoCount = dayData.pomoCount ?: 0
 
-    // 색상 농도 계산 로직
-    // 최대 공부 시간 기준 (예: 8시간 = 480분). 이 값을 기준으로 비율을 계산합니다.
-    // 이 값은 앱의 특성에 맞게 조절할 수 있습니다.
-    val maxStudyMinutesReference = 8 * 60
-    val studyRatio = (studyMinutes.toFloat() / maxStudyMinutesReference).coerceIn(0f, 1f)
+    // 2. 색상 농도 계산 로직을 '횟수' 기준으로 변경
+    // 하루 최대 10회를 기준으로 색상 농도를 계산 (이 값은 조절 가능)
+    val maxPomoCountReference = 10
+    val pomoRatio = (pomoCount.toFloat() / maxPomoCountReference).coerceIn(0f, 1f)
 
-    val baseCellColor = Color(0xFFF48FB1) // 기본 테마 색상 사용
+    val baseCellColor = Color(0xFFF48FB1) // 기본 테마 색상
 
     val cellColor = when {
-        dayData.isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f) // 선택된 날짜는 다른 색으로 강조
-        dayData.isCurrentMonth && studyMinutes > 0 -> {
-            // 공부 시간에 비례하여 투명도 조절
-            // 최소 투명도: 아주 적은 시간 공부해도 보이도록 (예: 0.15f)
-            // 최대 투명도: 가장 많이 공부했을 때 (예: 0.9f 또는 1.0f)
+        dayData.isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+        dayData.isCurrentMonth && pomoCount > 0 -> {
             val minAlpha = 0.25f
-            val maxAlpha = 0.9f // 좀 더 진하게 하려면 1.0f 까지 가능
-
-            // studyRatio가 0일 때 minAlpha, 1일 때 maxAlpha가 되도록 계산
-            val calculatedAlpha = minAlpha + (studyRatio * (maxAlpha - minAlpha))
-
+            val maxAlpha = 0.9f
+            val calculatedAlpha = minAlpha + (pomoRatio * (maxAlpha - minAlpha))
             baseCellColor.copy(alpha = calculatedAlpha.coerceIn(minAlpha, maxAlpha))
         }
-        dayData.isCurrentMonth -> Color.Transparent // 공부 시간이 없는 현재 달의 날짜
-        else -> Color.Transparent // 이전/다음 달 날짜
+        else -> Color.Transparent
     }
 
     val textColor = if (dayData.isCurrentMonth) {
-        // 배경색이 진해질 경우 텍스트 색상이 잘 보이도록 조정 가능 (예: 흰색)
-        if (studyRatio > 0.6f && cellColor.alpha > 0.5f) { // 예시: 공부 많이 해서 배경이 진하면
-            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f) // primary 색상 위의 텍스트 색
+        if (pomoRatio > 0.6f && cellColor.alpha > 0.5f) {
+            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
         } else {
             MaterialTheme.colorScheme.onSurface
         }
@@ -139,13 +131,12 @@ fun DayCellComposable(
         Color.LightGray.copy(alpha = 0.7f)
     }
 
-
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .padding(2.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(cellColor) // 계산된 cellColor 사용
+            .background(cellColor)
             .clickable(enabled = dayData.isCurrentMonth) { onDateSelected(dayData.date) }
             .border(
                 width = if (dayData.isSelected) 1.5.dp else 0.dp,
@@ -158,19 +149,18 @@ fun DayCellComposable(
             Text(
                 text = dayData.dayOfMonth.toString(),
                 fontSize = 13.sp,
-                color = textColor, // 계산된 textColor 사용
+                color = textColor,
                 fontWeight = if (dayData.isSelected || dayData.isCurrentMonth) FontWeight.Medium else FontWeight.Light
             )
-            // 공부 시간을 직접 표시하는 부분은 유지 (또는 제거/변경 가능)
-            if (dayData.isCurrentMonth && dayData.studyTime != null && studyMinutes > 0) {
+            // 3. 뽀모도로 횟수를 텍스트로 표시
+            if (dayData.isCurrentMonth && dayData.pomoCount != null && pomoCount > 0) {
                 Text(
-                    text = dayData.studyTime, // HH:mm 형식
-                    fontSize = 9.sp,
-                    color = textColor.copy(alpha = 0.8f) // 텍스트 색상에 맞춰 투명도 조절
+                    text = "${dayData.pomoCount}회", // "5회" 와 같은 형식으로 표시
+                    fontSize = 10.sp,
+                    color = textColor.copy(alpha = 0.8f)
                 )
             } else if (dayData.isCurrentMonth) {
-                // 공부 시간이 없거나 0분일 때 공간 확보
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(15.dp)) // 높이 조절
             }
         }
     }

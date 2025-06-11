@@ -16,8 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.items
-import com.example.team_project_clock.friend.Friend
-import com.example.team_project_clock.R
+import com.example.tomoto.R
 
 @Composable
 fun FriendRankingScreen() {

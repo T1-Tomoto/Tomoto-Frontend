@@ -5,7 +5,7 @@ import java.time.LocalDate
 data class DayStudyData(
     val dayOfMonth: Int,
     val date: LocalDate,
-    val studyTime: String?, // 예: "03:45"
+    val pomoCount: Int?,
     val isCurrentMonth: Boolean,
     val isSelected: Boolean = false
 )
