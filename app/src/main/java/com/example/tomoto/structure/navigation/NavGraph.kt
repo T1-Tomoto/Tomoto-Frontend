@@ -13,7 +13,6 @@ import com.example.tomoto.structure.bottombarcontents.settings.Settings
 import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
 import com.example.tomoto.structure.bottombarcontents.timer.Timer
 import com.example.tomoto.structure.bottombarcontents.timer.TimerNavGraph
-import com.example.tomoto.structure.bottombarcontents.todolist.TodoList
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCalendarComposable2
 
 import com.example.tomoto.structure.model.Routes

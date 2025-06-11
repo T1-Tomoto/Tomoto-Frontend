@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import com.example.team_project_clock.R
+import com.example.tomoto.R
 
 @Composable
 fun TimerPlayScreen(
