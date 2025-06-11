@@ -46,7 +46,6 @@ fun ToDoScreenWithCalendarComposable2() {
     var allTasks by remember { mutableStateOf(listOf<ToDoItem>()) }
     var newTaskText by remember { mutableStateOf("") }
     var headerToggleState by remember { mutableStateOf(true) }
-    var selectedBottomTabIndex by remember { mutableStateOf(1) }
 
     val initialDate = LocalDate.of(2025, 5, 10)
     var selectedCalendarDate by remember { mutableStateOf(initialDate) }
@@ -56,25 +55,22 @@ fun ToDoScreenWithCalendarComposable2() {
 
     var showDatePickerDialog by remember { mutableStateOf(false) }
 
-    // 임시 공부 시간 데이터
-    val studyTimeData = remember {
+    // 임시 뽀모도로 횟수 데이터 (Int 타입)
+    val pomoCountData = remember {
         mapOf(
-            LocalDate.of(2025, 5, 1) to "06:44", LocalDate.of(2025, 5, 2) to "07:11",
-            LocalDate.of(2025, 5, 3) to "04:59", LocalDate.of(2025, 5, 4) to "03:08",
-            LocalDate.of(2025, 5, 5) to "05:11", LocalDate.of(2025, 5, 6) to "02:10",
-            LocalDate.of(2025, 5, 7) to "03:00", LocalDate.of(2025, 5, 8) to "05:46",
-            LocalDate.of(2025, 5, 9) to "08:39", LocalDate.of(2025, 5, 10) to "07:25",
-            LocalDate.of(2025, 5, 11) to "06:16", LocalDate.of(2025, 5, 12) to "08:15",
-            LocalDate.of(2025, 5, 13) to "07:58", LocalDate.of(2025, 5, 14) to "04:38",
-            LocalDate.of(2025, 5, 15) to "08:00", LocalDate.of(2025, 5, 16) to "02:57",
-            LocalDate.of(2025, 5, 17) to "00:43", LocalDate.of(2025, 5, 19) to "07:58",
-            LocalDate.of(2025, 5, 20) to "09:09", LocalDate.of(2025, 5, 21) to "00:00",
-            LocalDate.of(2025, 5, 22) to "03:40", LocalDate.of(2025, 5, 24) to "00:52",
-            LocalDate.of(2025, 5, 25) to "06:48", LocalDate.of(2025, 5, 26) to "01:04",
-            LocalDate.of(2025, 5, 27) to "04:02", LocalDate.of(2025, 5, 28) to "03:31",
-            LocalDate.of(2025, 5, 31) to "04:32"
-        )//날짜별뽀모, 오늘까지 todo, 추가,삭제,
+            LocalDate.of(2025, 5, 1) to 8, LocalDate.of(2025, 5, 2) to 9,
+            LocalDate.of(2025, 5, 3) to 6, LocalDate.of(2025, 5, 4) to 4,
+            LocalDate.of(2025, 5, 5) to 7, LocalDate.of(2025, 5, 6) to 3,
+            LocalDate.of(2025, 5, 8) to 7, LocalDate.of(2025, 5, 9) to 10,
+            LocalDate.of(2025, 5, 10) to 9, LocalDate.of(2025, 5, 11) to 8,
+            LocalDate.of(2025, 5, 12) to 10, LocalDate.of(2025, 5, 13) to 9,
+            LocalDate.of(2025, 5, 14) to 5, LocalDate.of(2025, 5, 15) to 10,
+            LocalDate.of(2025, 5, 16) to 4, LocalDate.of(2025, 5, 20) to 11,
+            LocalDate.of(2025, 5, 22) to 5, LocalDate.of(2025, 5, 25) to 8,
+            LocalDate.of(2025, 5, 28) to 4, LocalDate.of(2025, 5, 31) to 5
+        )
     }
+
     val datesWithTasks by remember(allTasks) {
         derivedStateOf {
             allTasks
@@ -113,12 +109,6 @@ fun ToDoScreenWithCalendarComposable2() {
                 onToggleChanged = { headerToggleState = it }
             )
         },
-        bottomBar = {
-            //AppBottomNavigation(
-              //  selectedTab = selectedBottomTabIndex,
-                //onTabSelected = { selectedBottomTabIndex = it }
-            //)
-        },
         containerColor = Color.White
     ) { paddingValues ->
         Column(
@@ -127,7 +117,6 @@ fun ToDoScreenWithCalendarComposable2() {
                 .padding(paddingValues)
         ) {
             if (showDatePickerDialog) {
-                // DatePickerDialog가 표시될 때 DatePickerState를 생성하고 초기화합니다.
                 val dialogDatePickerState = rememberDatePickerState(
                     initialSelectedDateMillis = selectedCalendarDate
                         .atStartOfDay(ZoneId.systemDefault())
@@ -138,30 +127,20 @@ fun ToDoScreenWithCalendarComposable2() {
                 DatePickerDialog (
                     onDismissRequest = { showDatePickerDialog = false },
                     confirmButton = {
-                        Button(
-                            onClick = {
-                                showDatePickerDialog = false
-                                // dialogDatePickerState에서 선택된 날짜를 읽어옵니다.
-                                dialogDatePickerState.selectedDateMillis?.let { millis ->
-                                    selectedCalendarDate = Instant.ofEpochMilli(millis)
-                                        .atZone(ZoneId.systemDefault())
-                                        .toLocalDate()
-                                }
+                        Button(onClick = {
+                            showDatePickerDialog = false
+                            dialogDatePickerState.selectedDateMillis?.let { millis ->
+                                selectedCalendarDate = Instant.ofEpochMilli(millis)
+                                    .atZone(ZoneId.systemDefault()).toLocalDate()
                             }
-                        ) {
-                            Text("확인")
-                        }
+                        }) { Text("확인") }
                     },
                     dismissButton = {
-                        Button(
-                            onClick = { showDatePickerDialog = false }
-                        ) {
-                            Text("취소")
-                        }
+                        Button(onClick = { showDatePickerDialog = false }) { Text("취소") }
                     }
                 ) {
                     DatePicker(
-                        state = dialogDatePickerState, // 새로 생성된 state 사용
+                        state = dialogDatePickerState,
                         title = {
                             Text(
                                 text = "날짜 선택",
@@ -170,7 +149,6 @@ fun ToDoScreenWithCalendarComposable2() {
                         },
                         headline = {
                             val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault()) }
-                            // dialogDatePickerState에서 날짜를 읽어와 헤드라인에 표시
                             val dateText = dialogDatePickerState.selectedDateMillis?.let { millis ->
                                 Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate().format(formatter)
                             } ?: "날짜를 선택해주세요"
@@ -188,7 +166,7 @@ fun ToDoScreenWithCalendarComposable2() {
             if (headerToggleState) {
                 MonthlyCalendarWithStudyTimeComposable(
                     yearMonth = YearMonth.from(selectedCalendarDate),
-                    studyData = studyTimeData,
+                    pomoData = pomoCountData,
                     selectedDate = selectedCalendarDate,
                     onDateSelected = { date -> selectedCalendarDate = date }
                 )
@@ -216,8 +194,6 @@ fun ToDoScreenWithCalendarComposable2() {
                     }
                 },
                 onAddDate = {
-                    // setSelectionInMillis 호출 대신, 단순히 다이얼로그를 보여주는 상태만 변경합니다.
-                    // DatePickerState의 초기화는 위 if (showDatePickerDialog) 블록에서 처리됩니다.
                     showDatePickerDialog = true
                 }
             )
