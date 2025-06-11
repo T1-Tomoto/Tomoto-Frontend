@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TomotoTheme {
+                //TODO: 처음 시작을 login화면 , 성공하면 MainScreen() 실행
                 MainScreen()
             }
         }
