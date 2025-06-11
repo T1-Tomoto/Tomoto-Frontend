@@ -10,6 +10,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomato.UIcomponents.ToDoItem
+import com.example.tomoto.structure.bottombarcontents.rank.Friend
 import com.example.tomoto.structure.bottombarcontents.todolist.StudySession
 import com.example.tomoto.structure.model.Challenge
 import com.example.tomoto.structure.model.ChallengeListFactory
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import com.example.tomoto.R
 
 class TomotoViewModel : ViewModel() {
 
@@ -27,6 +29,9 @@ class TomotoViewModel : ViewModel() {
     val totalPomodoro = 2
     var todayPomodoro = 0
     var introduce = "default introduce text1"
+    var friendList = mutableStateListOf<Friend>()
+        private set
+
 
     fun updateIntroduce(newIntroduce : String){
         introduce = newIntroduce
@@ -251,4 +256,42 @@ class TomotoViewModel : ViewModel() {
     }
 
 
+    // 친구 추가 관련 함수
+    fun loadFriendsFromDb() {
+        viewModelScope.launch {
+            // 예시: DB 호출해서 리스트 가져오기 (추후 Retrofit/Supabase 등과 연동)
+            val dbFriends = listOf(
+                Friend("현수", 5, 10, R.drawable.baseline_person_24),
+                Friend("민수", 2, 8, R.drawable.baseline_person_24),
+                Friend("지영", 3, 9, R.drawable.baseline_person_24)
+            )
+            friendList.clear()
+            friendList.addAll(dbFriends)
+        }
+    }
+
+    suspend fun tryAddFriend(nickname: String): String {
+        // 이미 있는지 확인
+        if (friendList.any { it.nickname == nickname }) {
+            return "이미 친구 목록에 있습니다"
+        }
+
+        // DB에서 유저 존재 여부 확인 (실제 구현 필요)
+        val userExistsInDb = listOf("현수", "민수", "지영", "동건").contains(nickname)
+
+        return if (userExistsInDb) {
+            // DB에 친구 등록 API 호출 필요 (현재는 생략)
+            friendList.add(Friend(nickname, 0, 0, R.drawable.baseline_person_24))
+            "친구 추가가 되었습니다"
+        } else {
+            "해당 닉네임의 유저가 없습니다"
+        }
+    }
+
+    fun deleteFriend(nickname: String) {
+        viewModelScope.launch {
+            // 실제 DB에서 친구 삭제 API 호출 필요
+            friendList.removeAll { it.nickname == nickname }
+        }
+    }
 }
