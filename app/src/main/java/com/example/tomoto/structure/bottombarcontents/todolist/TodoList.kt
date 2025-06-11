@@ -3,6 +3,7 @@ package com.example.tomoto.structure.bottombarcontents.todolist
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,7 +53,6 @@ import java.util.Locale
 @Composable
 
 fun ToDoScreenWithCalendarComposable2(
-    paddingValues: PaddingValues,
     tomotoViewModel: TomotoViewModel
 ) {
     val allTasks by remember { derivedStateOf { tomotoViewModel.allTasks } }
@@ -134,7 +134,6 @@ fun ToDoScreenWithCalendarComposable2(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenHeaderComposable(

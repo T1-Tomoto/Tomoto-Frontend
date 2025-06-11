@@ -226,29 +226,4 @@ class TomotoViewModel : ViewModel() {
     }
 
 
-
-
-    //초기화
-    init {
-        //유저 정보 초기화
-        initializeUserLevelFromDb(3, 23)
-
-        //todolist 초기화
-        loadInitialTasks()
-        // 테스트용 더미 공부 세션 데이터 (실제로는 타이머에서 추가)
-        // addStudySession(LocalDate.now().minusDays(2), 3600) // 예: 2일 전 1시간 공부
-        // addStudySession(LocalDate.now().minusDays(1), 1800) // 예: 어제 30분 공부
-        // addStudySession(LocalDate.now(), 5400)           // 예: 오늘 1시간 30분 공부
-
-        // ToDoScreenWithCalendarComposable2에서 가져온 더미 데이터 예시 적용
-        addStudySession(LocalDate.of(2025, 5, 1), (6 * 3600 + 44 * 60).toLong())
-        addStudySession(LocalDate.of(2025, 5, 2), (7 * 3600 + 11 * 60).toLong())
-        addStudySession(LocalDate.of(2025, 5, 3), (4 * 3600 + 59 * 60).toLong())
-        addStudySession(LocalDate.of(2025, 5, 4), (3 * 3600 + 8 * 60).toLong())
-        addStudySession(LocalDate.of(2025, 5, 5), (5 * 3600 + 11 * 60).toLong())
-        // ... 나머지 studyTimeData에 해당하는 날짜와 시간도 이런 식으로 추가 ...
-        addStudySession(LocalDate.of(2025, 5, 28), (3 * 3600 + 31 * 60).toLong())
-        addStudySession(LocalDate.of(2025, 5, 31), (4 * 3600 + 32 * 60).toLong())
-
-    }
 }
