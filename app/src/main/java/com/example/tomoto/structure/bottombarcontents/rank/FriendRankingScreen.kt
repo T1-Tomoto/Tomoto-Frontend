@@ -26,12 +26,14 @@ import com.example.tomoto.structure.datastructures.FriendsViewModel
 
 @Composable
 fun FriendRankingScreen(friendsViewModel: FriendsViewModel= viewModel()) {
-    val userRanking by friendsViewModel.userRanking.collectAsState()
+
+    val friendsRanking by friendsViewModel.friendsRanking.collectAsState()
 
     LaunchedEffect(Unit) {
         Log.d("CheckEffect", "LaunchedEffect 진입")
-        friendsViewModel.fetchAllUserRanking()
+        friendsViewModel.fetchFriendsRanking()
     }
+    Log.i("친구 랭킹 결과",friendsRanking.toString())
 
     val friends = listOf(
         Friend(1, "현수", true, 5, 10, R.drawable.baseline_person_24),
