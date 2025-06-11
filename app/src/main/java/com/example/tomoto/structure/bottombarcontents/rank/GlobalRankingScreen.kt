@@ -10,8 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.team_project_clock.friend.Friend
-import com.example.team_project_clock.R
+import com.example.tomoto.R
 
 @Composable
 fun GlobalRankingScreen() {
