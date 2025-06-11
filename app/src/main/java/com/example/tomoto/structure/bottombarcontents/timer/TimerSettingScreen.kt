@@ -1,5 +1,6 @@
 package com.example.tomoto.structure.bottombarcontents.timer
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
@@ -27,6 +28,13 @@ fun TimerSettingScreen(
     var task by remember { mutableStateOf("") }
     var pomoCount by remember { mutableStateOf(5) }
     val highlightColor = Color(0xFFFFDEDE)
+    val todayPomodoro by viewModel.todayPomodoro.collectAsState()
+
+    //API 호출: 화면 진입 시 딱 1번
+    LaunchedEffect(Unit) {
+        viewModel.fetchTodayPomodoro()
+    }
+    Log.i("오늘의 뽀모도로", todayPomodoro.toString())
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -132,7 +140,7 @@ fun TimerSettingScreen(
             text = buildAnnotatedString {
                 append("오늘 총 ")
                 withStyle(style = SpanStyle(color = highlightColor, fontWeight = FontWeight.Bold)) {
-                    append(viewModel.todayPomodoro.toString())
+                    append(todayPomodoro.toString())
                 }
                 append(" 뽀모도로로 집중하셨네요!")
             },

@@ -34,12 +34,12 @@ class FriendsViewModel : ViewModel() {
     fun fetchFriendsRanking() {
         viewModelScope.launch {
             try {
-                //TODO: 받아온 랭킹 정보 처리
+                //TODO: 받아온 친구 랭킹 정보 처리
                 val friendsRanking = ServicePool.rankService.getFriendsRanking()
-                Log.i("랭킹",friendsRanking.toString())
+                Log.i("친구 랭킹",friendsRanking.toString())
                 _friendsRanking.value = friendsRanking
             } catch (e: Exception) {
-                Log.e("Ranking", "에러: ${e.message}")
+                Log.e("friendsRanking", "에러: ${e.message}")
             }
         }
     }

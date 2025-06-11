@@ -2,6 +2,7 @@ package com.example.tomoto.structure.datastructures
 
 import UserLevelState
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -11,9 +12,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomato.UIcomponents.ToDoItem
 import com.example.tomoto.structure.bottombarcontents.todolist.StudySession
+import com.example.tomoto.structure.data.dto.response.AllUserRankRes
+import com.example.tomoto.structure.data.dto.response.UserInfoRes
+import com.example.tomoto.structure.data.service.ServicePool
 import com.example.tomoto.structure.model.Challenge
 import com.example.tomoto.structure.model.ChallengeListFactory
 import com.example.tomoto.structure.model.LevelConfig
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -21,11 +27,41 @@ import java.util.concurrent.TimeUnit
 
 class TomotoViewModel : ViewModel() {
 
+    private val _userInfo = MutableStateFlow<UserInfoRes?>(null)
+    val userInfo: StateFlow<UserInfoRes?> = _userInfo
+
+    fun fetchUserInfo() {
+        viewModelScope.launch {
+            try {
+                val info = ServicePool.userService.info()
+                Log.i("유저 정보", info.toString())
+                _userInfo.value = info
+            } catch (e: Exception) {
+                Log.e("유저 정보", "에러: ${e.message}")
+            }
+        }
+    }
+
+    private val _todayPomodoro = MutableStateFlow(0)
+    val todayPomodoro: StateFlow<Int> = _todayPomodoro
+
+    fun fetchTodayPomodoro() {
+        viewModelScope.launch {
+            try {
+                val todayPomo = ServicePool.pomoService.getTodayPomo()
+                Log.i("TodayPomo", "오늘 뽀모도로: $todayPomo")
+                _todayPomodoro.value = todayPomo
+            } catch (e: Exception) {
+                Log.e("TodayPomo", "에러: ${e.message}")
+            }
+        }
+    }
+
     //db 필요
-    val userName = "UserName"
-    val userEmail = "tomoto@gmail.com"
-    val totalPomodoro = 2
-    var todayPomodoro = 0
+    val userName: String
+        get() = userInfo.value?.nickname ?: "Unknown"
+    val totalPomodoro: Int //TODO: 확인 필요
+        get() = userInfo.value?.totalPomo?:0
     var introduce = "default introduce text1"
 
     fun updateIntroduce(newIntroduce : String){
@@ -33,8 +69,8 @@ class TomotoViewModel : ViewModel() {
     }
 
     fun incrementPomodoroAndEvaluate(context: Context) {
-        val newToday = todayPomodoro + 1
-        todayPomodoro = newToday
+        val newToday = _todayPomodoro.value + 1
+        _todayPomodoro.value = newToday
 
         // 저장
         viewModelScope.launch {
@@ -112,11 +148,11 @@ class TomotoViewModel : ViewModel() {
                 ChallengePrefs.updateResetDate(context)
                 ChallengePrefs.saveDailyStates(context, List(freshList.size) { false })
 
-                todayPomodoro = 0
+                _todayPomodoro.value = 0
                 ChallengePrefs.resetTodayPomodoro(context)
             } else {
                 loadDailyChallenges(savedDailyStates)
-                todayPomodoro = ChallengePrefs.loadTodayPomodoro(context) // 오늘값 불러오기
+                _todayPomodoro.value = ChallengePrefs.loadTodayPomodoro(context) // 오늘값 불러오기
             }
 
             if (permanentChallenges.isEmpty()) {

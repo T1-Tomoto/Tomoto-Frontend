@@ -2,8 +2,10 @@ package com.example.tomoto.structure.data.service
 
 import com.example.tomoto.structure.data.dto.request.UserLoginReq
 import com.example.tomoto.structure.data.dto.request.UserRegisterReq
+import com.example.tomoto.structure.data.dto.response.UserInfoRes
 import com.example.tomoto.structure.data.dto.response.UserTokenRes
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface UserService {
@@ -12,5 +14,8 @@ interface UserService {
 
     @POST("users/login")
     suspend fun login(@Body req: UserLoginReq): UserTokenRes
+
+    @GET("users/info")
+    suspend fun info(): UserInfoRes
 
 }
