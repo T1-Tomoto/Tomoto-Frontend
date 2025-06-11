@@ -16,13 +16,10 @@ import com.example.tomoto.structure.bottombarcontents.settings.ChallengeListScre
 import com.example.tomoto.structure.bottombarcontents.settings.MusicListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.Settings
 import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
-import com.example.tomoto.structure.bottombarcontents.timer.Timer
-import com.example.tomoto.structure.bottombarcontents.todolist.TodoList
 import com.example.tomoto.structure.data.ServicePool
 import com.example.tomoto.structure.data.dto.request.UserLoginReq
 import com.example.tomoto.structure.data.dto.request.UserRegisterReq
 import com.example.tomoto.structure.model.Routes
-import com.example.tomoto.structure.viewmodel.TomotoViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +27,6 @@ import kotlinx.coroutines.withContext
 import com.example.tomoto.structure.bottombarcontents.timer.TimerNavGraph
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCalendarComposable2
 import com.example.tomoto.structure.datastructures.TomotoViewModel
-import com.example.tomoto.structure.model.Routes
 
 
 @Composable
