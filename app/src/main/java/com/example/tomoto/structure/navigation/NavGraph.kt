@@ -1,6 +1,5 @@
 package com.example.tomoto.structure.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,18 +11,17 @@ import com.example.tomoto.structure.bottombarcontents.settings.Settings
 import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
 import com.example.tomoto.structure.bottombarcontents.timer.Timer
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCalendarComposable2
-
-import com.example.tomoto.structure.model.Routes
 import com.example.tomoto.structure.datastructures.TomotoViewModel
+import com.example.tomoto.structure.model.Routes
 
 @Composable
-fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel,paddingValues: PaddingValues) {
+fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel) {
     NavHost(
         navController = navController,
         startDestination = Routes.Timer.route
     ) {
         composable(Routes.Timer.route) { Timer(tomotoViewModel = tomotoViewModel) }
-        composable(Routes.TodoList.route) { ToDoScreenWithCalendarComposable2(paddingValues = paddingValues,tomotoViewModel = tomotoViewModel) }
+        composable(Routes.TodoList.route) { ToDoScreenWithCalendarComposable2(tomotoViewModel = tomotoViewModel) }
         composable(Routes.Rank.route) { Rank() }
         composable(Routes.Settings.route) {
             Settings(
