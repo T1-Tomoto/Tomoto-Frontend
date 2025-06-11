@@ -41,10 +41,10 @@ fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel)
                             )
                             Log.d("login", "accessToken = ${res.accessToken}")
 
-                            // ✅ 토큰 저장
+                            // 토큰 저장
                             TokenManager.setAccessToken(res.accessToken)
 
-                            // ✅ 다음 화면으로 이동
+                            // 다음 화면으로 이동
                             withContext(Dispatchers.Main) {
                                 navController.navigate(Routes.Timer.route) {
                                     popUpTo(Routes.Login.route) { inclusive = true }

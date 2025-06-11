@@ -12,4 +12,5 @@ interface UserService {
 
     @POST("users/login")
     suspend fun login(@Body req: UserLoginReq): UserTokenRes
+
 }
