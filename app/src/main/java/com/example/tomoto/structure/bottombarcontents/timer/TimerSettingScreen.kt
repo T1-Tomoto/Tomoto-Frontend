@@ -17,20 +17,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 @Composable
 fun TimerSettingScreen(
+    viewModel: TomotoViewModel,
     onStartFocus: (String, Int) -> Unit
 ) {
     var task by remember { mutableStateOf("") }
     var pomoCount by remember { mutableStateOf(5) }
     val highlightColor = Color(0xFFFFDEDE)
-    val isFocused = remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -50,7 +49,7 @@ fun TimerSettingScreen(
                 },
             contentAlignment = Alignment.Center
         ) {
-            if (task.isEmpty() && !isFocused.value) {
+            if (task.isEmpty()) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
@@ -75,10 +74,7 @@ fun TimerSettingScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 5.dp)
-                    .onFocusChanged {
-                        isFocused.value = it.isFocused
-                    },
+                    .padding(bottom = 5.dp),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier.fillMaxWidth(),
@@ -136,7 +132,7 @@ fun TimerSettingScreen(
             text = buildAnnotatedString {
                 append("오늘 총 ")
                 withStyle(style = SpanStyle(color = highlightColor, fontWeight = FontWeight.Bold)) {
-                    append("7")
+                    append(viewModel.todayPomodoro.toString())
                 }
                 append(" 뽀모도로로 집중하셨네요!")
             },
@@ -144,10 +140,4 @@ fun TimerSettingScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }
-}
-
-@Preview
-@Composable
-private fun TimerSettingPreview() {
-    TimerSettingScreen { _, _ -> }
 }
