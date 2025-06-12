@@ -21,9 +21,9 @@ class FriendsViewModel : ViewModel() {
     fun fetchAllUserRanking() {
         viewModelScope.launch {
             try {
-                //TODO: 받아온 랭킹 정보 처리
+                //TODO: 받아온 전체 랭킹 정보 처리
                 val ranking = ServicePool.rankService.getAllUserRanking()
-                Log.i("랭킹",ranking.toString())
+                Log.i("전체 랭킹",ranking.toString())
                 _userRanking.value = ranking
             } catch (e: Exception) {
                 Log.e("Ranking", "에러: ${e.message}")
@@ -42,5 +42,13 @@ class FriendsViewModel : ViewModel() {
                 Log.e("friendsRanking", "에러: ${e.message}")
             }
         }
+    }
+
+    fun fetchAddFriend(nicknameInput: String){
+        //TODO: 백엔드 로직. 안 건들이셔도 돼요
+    }
+
+    fun fetchDeleteFriend(nickname: String){
+        //TODO: 백엔드 로직. 안 건들이셔도 돼요
     }
 }
