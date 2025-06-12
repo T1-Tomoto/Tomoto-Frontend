@@ -31,7 +31,9 @@ fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
     val fullScreenRoutes = listOf(
         Routes.UserInfo.route,
         Routes.MusicList.route,
-        Routes.ChallengeList.route
+        Routes.ChallengeList.route,
+        Routes.Login.route,
+        Routes.Signup.route
     )
 
     val isFullScreen = currentRoute in fullScreenRoutes

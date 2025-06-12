@@ -1,6 +1,7 @@
 package com.example.tomoto.structure.datastructures
 
 import UserLevelState
+import android.app.Service
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
@@ -13,8 +14,10 @@ import com.example.tomoto.R
 import com.example.tomoto.structure.bottombarcontents.rank.Friend
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoItem
 import com.example.tomoto.structure.data.dto.request.AddTodoReq
+import com.example.tomoto.structure.data.dto.request.LevelUpdateReq
 import com.example.tomoto.structure.data.dto.response.UserInfoRes
 import com.example.tomoto.structure.data.service.ServicePool
+import com.example.tomoto.structure.data.service.UserService
 import com.example.tomoto.structure.model.Challenge
 import com.example.tomoto.structure.model.ChallengeListFactory
 import com.example.tomoto.structure.model.LevelConfig
@@ -134,6 +137,9 @@ class TomotoViewModel : ViewModel() {
             newXp -= newThreshold
             newLevel++
             newThreshold = LevelConfig.xpThresholdFor(newLevel)
+            viewModelScope.launch {
+                ServicePool.userService.levelUp()
+            }
         }
 
         _userLevel.value = UserLevelState(
@@ -141,6 +147,17 @@ class TomotoViewModel : ViewModel() {
             xp = newXp,
             xpForNextLevel = newThreshold
         )
+
+//        viewModelScope.launch {
+//            val levelUpdateRequest = LevelUpdateReq(level = newLevel.toString(), xp = newXp.toString()) // LevelUpdateReq의 실제 필드에 맞게 수정해야 합니다.
+//
+//            try {
+//                ServicePool.userService.levelUpdate(levelUpdateRequest)
+//                Log.d("TomotoViewModel", "Level update request sent: $levelUpdateRequest")
+//            } catch (e: Exception) {
+//                Log.e("TomotoViewModel", "Failed to send level update: ${e.message}", e)
+//            }
+//        }
     }
 
     fun initializeUserLevelFromDb(level: Int, xp: Int) {
@@ -223,6 +240,7 @@ class TomotoViewModel : ViewModel() {
                 val info = ServicePool.userService.info()
                 Log.i("유저 정보", info.toString())
                 _userInfo.value = info
+                initializeUserLevelFromDb(info.level, 0)
             } catch (e: Exception) {
                 Log.e("UserInfo", "유저 정보 로딩 실패: ${e.message}")
             }
