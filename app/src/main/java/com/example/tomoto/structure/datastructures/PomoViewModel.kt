@@ -16,12 +16,14 @@ class PomoViewModel: ViewModel() {
     val pomoHistory: StateFlow<Map<LocalDate, Int>> = _pomoHistory
 
     fun fetchPomoHistory() {
+        Log.i("1","11s")
         viewModelScope.launch {
             try {
                 val response: List<DailyPomoCountDto> = ServicePool.pomoService.getAllPomoHistory()
                 val mapped = response.groupBy { it.createdAt.toLocalDate() }
                     .mapValues { (_, list) -> list.sumOf { it.pomoNum } }
                 _pomoHistory.value = mapped
+                Log.d("여기","악")
             } catch (e: Exception) {
                 Log.e("PomoHistory", "실패: ${e.message}")
             }

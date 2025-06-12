@@ -10,8 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tomoto.R
-import com.example.tomoto.structure.bottombarcontents.rank.Friend
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoItem
 import com.example.tomoto.structure.data.dto.response.AllTodoRes
 import com.example.tomoto.structure.data.dto.response.FriendsRankRes
