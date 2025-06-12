@@ -11,6 +11,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoItem
+import com.example.tomoto.structure.data.dto.response.AllTodoRes
+import com.example.tomoto.structure.data.dto.response.FriendsRankRes
 import com.example.tomoto.structure.data.dto.response.UserInfoRes
 import com.example.tomoto.structure.data.service.ServicePool
 import com.example.tomoto.structure.model.Challenge
@@ -50,6 +52,23 @@ class TomotoViewModel : ViewModel() {
                 _todayPomodoro.value = todayPomo
             } catch (e: Exception) {
                 Log.e("TodayPomo", "에러: ${e.message}")
+            }
+        }
+    }
+
+    //todo 리스트
+    private val _todoList = MutableStateFlow<List<AllTodoRes>>(emptyList())
+    val todoList: StateFlow<List<AllTodoRes>> = _todoList
+
+    fun fetchAllTodoList() {
+        viewModelScope.launch {
+            try {
+                //TODO: 받아온 투두리스트 정보 처리
+                val todoList = ServicePool.todoService.getAllTodo()
+                Log.i("투두리스트",todoList.toString())
+                _todoList.value = todoList
+            } catch (e: Exception) {
+                Log.e("Ranking", "에러: ${e.message}")
             }
         }
     }
