@@ -23,22 +23,23 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tomoto.R
 import com.example.tomoto.structure.datastructures.FriendsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun FriendRankingScreen(friendsViewModel: FriendsViewModel= viewModel()) {
+fun FriendRankingScreen(viewModel: FriendsViewModel= viewModel()) {
 
-    val friendsRanking by friendsViewModel.friendsRanking.collectAsState()
+    val friendsRanking by viewModel.friendsRanking.collectAsState()
 
     LaunchedEffect(Unit) {
         Log.d("CheckEffect", "LaunchedEffect 진입")
-        friendsViewModel.fetchFriendsRanking()
+        viewModel.fetchFriendsRanking()
     }
     Log.i("친구 랭킹 결과",friendsRanking.toString())
 
     val friends = listOf(
-        Friend(1, "현수", true, 5, 10, R.drawable.baseline_person_24),
-        Friend(2, "민수", false, 2, 8, R.drawable.baseline_person_24),
-        Friend(3, "지영", true, 3, 9, R.drawable.baseline_person_24),
+        Friend("현수", 5, 10, R.drawable.baseline_person_24),
+        Friend("민수", 2, 8, R.drawable.baseline_person_24),
+        Friend("지영", 3, 9, R.drawable.baseline_person_24),
     )
 
     var nicknameInput by remember { mutableStateOf("") }
@@ -46,9 +47,9 @@ fun FriendRankingScreen(friendsViewModel: FriendsViewModel= viewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadFriendsFromDb()
-    }
+//    LaunchedEffect(Unit) {
+//        friendsViewModel.loadFriendsFromDb()
+//    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -117,8 +118,11 @@ fun FriendRankingScreen(friendsViewModel: FriendsViewModel= viewModel()) {
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        val result = viewModel.tryAddFriend(nicknameInput)
-                        snackbarHostState.showSnackbar(result)
+                        val result = viewModel.fetchAddFriend(nicknameInput)
+                        snackbarHostState.showSnackbar(
+                            message = result.toString(),
+                            actionLabel = null,
+                            duration = SnackbarDuration.Short )
                         nicknameInput = ""
                     }
                 },
@@ -137,7 +141,7 @@ fun FriendRankingScreen(friendsViewModel: FriendsViewModel= viewModel()) {
                 confirmButton = {
                     TextButton(onClick = {
                         coroutineScope.launch {
-                            viewModel.deleteFriend(friendToDelete!!.nickname)
+                            viewModel.fetchDeleteFriend(friendToDelete!!.nickname)
                             snackbarHostState.showSnackbar("${friendToDelete!!.nickname}님이 삭제되었습니다.")
                             friendToDelete = null
                         }
