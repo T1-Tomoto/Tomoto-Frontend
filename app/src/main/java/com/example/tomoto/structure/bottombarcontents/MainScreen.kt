@@ -25,11 +25,9 @@ import com.example.tomoto.structure.navigation.NavGraph
 fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
     val navController = rememberNavController()
 
-    // 현재 라우트 감지
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // TopBar, BottomBar 없이 전체를 덮는 화면 경로
     val fullScreenRoutes = listOf(
         Routes.UserInfo.route,
         Routes.MusicList.route,

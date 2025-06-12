@@ -25,8 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,26 +47,15 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun ToDoScreenWithCalendarComposable2(
     tomotoViewModel: TomotoViewModel
 ) {
-
-    val todoList by tomotoViewModel.todoList.collectAsState()
-
-    //API 호출: 화면 진입 시 딱 1번
-    LaunchedEffect(Unit) {
-        tomotoViewModel.fetchAllTodoList()
-    }
-    Log.i("투두리스트", todoList.toString())
-
-
+    Log.d("UIState", "UI의 allTasks 개수: ${tomotoViewModel.allTasks.size}")
     val allTasks by remember { derivedStateOf { tomotoViewModel.allTasks } }
-    val PomoCountData by remember { derivedStateOf { tomotoViewModel.pomoCountData } }
+    val pomoCountData by tomotoViewModel.pomoCountData
 
     var headerToggleState by remember { mutableStateOf(true) }
-    val initialDate = LocalDate.of(2025, 5, 10)
-    var selectedCalendarDate by remember { mutableStateOf(initialDate) }
+    var selectedCalendarDate by remember { mutableStateOf(LocalDate.now()) }
 
     val dueDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy.MM.dd") }
     val headerDateFormatter = remember { DateTimeFormatter.ofPattern("yy.MM.dd EEE", Locale.KOREAN) }
@@ -81,6 +68,7 @@ fun ToDoScreenWithCalendarComposable2(
             allTasks.filter { it.dueDate == selectedDateStr }
         }
     }
+
     val datesWithTasks by remember(allTasks) {
         derivedStateOf {
             allTasks
@@ -92,15 +80,15 @@ fun ToDoScreenWithCalendarComposable2(
         }
     }
 
+
     if (showDatePickerDialog) {
         val dialogDatePickerState = rememberDatePickerState(
             initialSelectedDateMillis = selectedCalendarDate
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli()
-
         )
-        DatePickerDialog (
+        DatePickerDialog(
             onDismissRequest = { showDatePickerDialog = false },
             confirmButton = {
                 Button(onClick = {
@@ -140,8 +128,7 @@ fun ToDoScreenWithCalendarComposable2(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenHeaderComposable(
@@ -153,7 +140,7 @@ fun ToDoScreenWithCalendarComposable2(
             if (headerToggleState) {
                 MonthlyCalendarWithStudyTimeComposable(
                     yearMonth = YearMonth.from(selectedCalendarDate),
-                    pomoData = PomoCountData.value,
+                    pomoData = pomoCountData,
                     selectedDate = selectedCalendarDate,
                     onDateSelected = { date -> selectedCalendarDate = date }
                 )

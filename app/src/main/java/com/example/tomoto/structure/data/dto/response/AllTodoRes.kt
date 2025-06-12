@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 @Serializable
 data class AllTodoRes(
+    val todoId: Long,
     @Serializable(with = LocalDateTimeSerializer::class)
     val dueDate: LocalDateTime?,
     val content: String,
