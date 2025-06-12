@@ -9,5 +9,5 @@ interface PomoService {
     suspend fun getTodayPomo():Int
 
     @GET("/pomos/history")
-    suspend fun getAllPomoHistory(): DailyPomoCountDto
+    suspend fun getAllPomoHistory(): List<DailyPomoCountDto>
 }
