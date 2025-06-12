@@ -1,9 +1,9 @@
 package com.example.tomoto.structure.bottombarcontents.todolist
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,10 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pomato.UIcomponents.MonthlyCalendarWithStudyTimeComposable
-import com.example.pomato.UIcomponents.ScreenHeaderComposable
-import com.example.pomato.UIcomponents.SimplifiedMonthlyCalendarComposable
-import com.example.pomato.UIcomponents.ToDoListItemComposable
 import com.example.tomoto.structure.datastructures.TomotoViewModel
 import java.time.Instant
 import java.time.LocalDate
@@ -55,6 +53,16 @@ import java.util.Locale
 fun ToDoScreenWithCalendarComposable2(
     tomotoViewModel: TomotoViewModel
 ) {
+
+    val todoList by tomotoViewModel.todoList.collectAsState()
+
+    //API 호출: 화면 진입 시 딱 1번
+    LaunchedEffect(Unit) {
+        tomotoViewModel.fetchAllTodoList()
+    }
+    Log.i("투두리스트", todoList.toString())
+
+
     val allTasks by remember { derivedStateOf { tomotoViewModel.allTasks } }
     val PomoCountData by remember { derivedStateOf { tomotoViewModel.pomoCountData } }
 

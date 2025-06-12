@@ -1,5 +1,6 @@
-package com.example.pomato.UIcomponents
+package com.example.tomoto.structure.bottombarcontents.todolist
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,6 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tomoto.structure.datastructures.PomoViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -35,8 +41,17 @@ fun MonthlyCalendarWithStudyTimeComposable(
     yearMonth: YearMonth,
     pomoData: Map<LocalDate, Int>, //뽀모도로로
     selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    pomoViewModel: PomoViewModel = viewModel()
 ) {
+
+    val dailyPomoCount by pomoViewModel.pomoHistory.collectAsState()
+
+    LaunchedEffect(Unit) {
+        pomoViewModel.fetchPomoHistory()
+        Log.i("날짜별 뽀모도로 횟수", dailyPomoCount.toString())
+    }
+
     val daysInMonth = yearMonth.lengthOfMonth()
     val firstOfMonth = yearMonth.atDay(1)
     // 월요일(1) ~ 일요일(7)을 0(월) ~ 6(일)로 변환

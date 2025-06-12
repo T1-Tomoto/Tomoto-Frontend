@@ -35,6 +35,3 @@ object ApiFactory {
 
     inline fun <reified T> create(): T = retrofit.create(T::class.java)
 }
-object ServicePool {
-    val userService = ApiFactory.create<UserService>()
-}
