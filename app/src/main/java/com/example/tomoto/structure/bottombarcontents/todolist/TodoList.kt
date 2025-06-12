@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.tomoto.structure.datastructures.TomotoViewModel
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -55,7 +56,7 @@ fun ToDoScreenWithCalendarComposable2(
     val pomoCountData by tomotoViewModel.pomoCountData
 
     var headerToggleState by remember { mutableStateOf(true) }
-    var selectedCalendarDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedCalendarDate by remember { mutableStateOf(LocalDateTime.now()) }
 
     val dueDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy.MM.dd") }
     val headerDateFormatter = remember { DateTimeFormatter.ofPattern("yy.MM.dd EEE", Locale.KOREAN) }
@@ -84,7 +85,7 @@ fun ToDoScreenWithCalendarComposable2(
     if (showDatePickerDialog) {
         val dialogDatePickerState = rememberDatePickerState(
             initialSelectedDateMillis = selectedCalendarDate
-                .atStartOfDay(ZoneId.systemDefault())
+                .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli()
         )
@@ -95,7 +96,7 @@ fun ToDoScreenWithCalendarComposable2(
                     showDatePickerDialog = false
                     dialogDatePickerState.selectedDateMillis?.let { millis ->
                         selectedCalendarDate = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault()).toLocalDate()
+                            .atZone(ZoneId.systemDefault()).toLocalDateTime()
                     }
                 }) { Text("확인") }
             },
@@ -141,15 +142,15 @@ fun ToDoScreenWithCalendarComposable2(
                 MonthlyCalendarWithStudyTimeComposable(
                     yearMonth = YearMonth.from(selectedCalendarDate),
                     pomoData = pomoCountData,
-                    selectedDate = selectedCalendarDate,
-                    onDateSelected = { date -> selectedCalendarDate = date }
+                    selectedDate = selectedCalendarDate.toLocalDate(),
+                    onDateSelected = { date -> selectedCalendarDate = date.atStartOfDay() }
                 )
             } else {
                 SimplifiedMonthlyCalendarComposable(
                     yearMonth = YearMonth.from(selectedCalendarDate),
-                    selectedDate = selectedCalendarDate,
+                    selectedDate = selectedCalendarDate.toLocalDate(),
                     datesWithTasks = datesWithTasks,
-                    onDateSelected = { date -> selectedCalendarDate = date }
+                    onDateSelected = { date -> selectedCalendarDate = date.atStartOfDay() }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
