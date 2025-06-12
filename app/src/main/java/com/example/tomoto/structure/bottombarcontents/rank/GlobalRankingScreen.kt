@@ -30,11 +30,11 @@ fun GlobalRankingScreen(friendsViewModel: FriendsViewModel = viewModel()) {
     Log.i("랭킹 결과",userRanking.toString())
 
     val users = listOf(
-        Friend(1, "현수", true, 5, 10, R.drawable.baseline_person_24),
-        Friend(2, "민수", false, 4, 9, R.drawable.baseline_person_24),
-        Friend(3, "지영", true, 3, 8, R.drawable.baseline_person_24),
-        Friend(4, "도윤", true, 2, 7, R.drawable.baseline_person_24),
-        Friend(5, "영희", false, 1, 6, R.drawable.baseline_person_24)
+        Friend("현수", 5, 10, R.drawable.baseline_person_24),
+        Friend("민수", 4, 9, R.drawable.baseline_person_24),
+        Friend("지영", 3, 8, R.drawable.baseline_person_24),
+        Friend("도윤", 2, 7, R.drawable.baseline_person_24),
+        Friend("영희", 1, 6, R.drawable.baseline_person_24)
     )
 
     Column(
