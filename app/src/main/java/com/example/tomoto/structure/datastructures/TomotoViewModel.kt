@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
@@ -279,12 +280,12 @@ class TomotoViewModel : ViewModel() {
         }
     }
 
-    fun addTask(text: String, dueDate: LocalDate) {
+    fun addTask(text: String, dueDate: LocalDateTime) {
         viewModelScope.launch {
             if (text.isNotBlank()) {
                 try {
-                    val dueDateTime = dueDate.atStartOfDay().toInstant(ZoneOffset.UTC).toString()
-                    val request = AddTodoReq(content = text, dueDate = dueDateTime)
+//                    val dueDateTime = dueDate.atStartOfDay().toInstant(ZoneOffset.UTC)
+                    val request = AddTodoReq(content = text, dueDate = dueDate)
                     Log.d("ToDoDateCheck", "서버로 보내는 요청: $request")
 
                     ServicePool.todoService.addTodo(request)
