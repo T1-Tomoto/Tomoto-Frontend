@@ -24,7 +24,7 @@ interface UserService {
     suspend fun levelUp() : Response<Unit>
 
     //변경 필요
-    @POST("users/levelupdate")
+    @POST("users/level")
     suspend fun levelUpdate(@Body req: LevelUpdateReq) : Response<Unit>
 
 }
