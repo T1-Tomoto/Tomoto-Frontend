@@ -39,16 +39,16 @@ fun TimerPlayScreen(
     viewModel: TomotoViewModel,
     context: Context
 ) {
-    var isPlaying by remember { mutableStateOf(true) }
-    var showVolume by remember { mutableStateOf(true) }
-
     val focusTime = 1 * 60 / 10 // 실제로 25분
     val restTime = 1 * 60 / 10 // 실제로 5분
     val longRestTime = 1 * 60 / 6 // 실제로 30분
 
+    var isPlaying by remember { mutableStateOf(true) }
+    var showVolume by remember { mutableStateOf(true) }
     var currentPhase by remember { mutableStateOf("FOCUS") }
     var currentPomoIndex by remember { mutableStateOf(0) }
     var timer by remember { mutableStateOf(focusTime) }
+    var focusStreak by remember { mutableStateOf(0) }
 
     val musicUrl = viewModel.musicList.firstOrNull() ?: ""
 
@@ -59,7 +59,8 @@ fun TimerPlayScreen(
 
             if (timer <= 0) {
                 if (currentPhase == "FOCUS") {
-                    viewModel.incrementPomodoroAndEvaluate(context)
+                    focusStreak++
+                    viewModel.incrementPomodoroAndEvaluate(context, focusStreak)
                     currentPhase = "REST"
                     timer = if ((currentPomoIndex + 1) % 4 == 0) longRestTime else restTime
                 } else {
@@ -71,6 +72,7 @@ fun TimerPlayScreen(
                         isPlaying = false
                         onCancel()
                     }
+                    focusStreak = 0
                 }
             }
         }

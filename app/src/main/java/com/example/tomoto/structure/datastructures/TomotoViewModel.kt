@@ -59,7 +59,7 @@ class TomotoViewModel : ViewModel() {
         introduce = newIntroduce
     }
 
-    fun incrementPomodoroAndEvaluate(context: Context) {
+    fun incrementPomodoroAndEvaluate(context: Context, timerStreak: Int) {
         val newToday = _todayPomodoro.value + 1
         _todayPomodoro.value = newToday
 
@@ -70,9 +70,18 @@ class TomotoViewModel : ViewModel() {
         evaluateDailyChallenges(context, pomodoroCount = newToday)
         evaluatePermanentChallenges(
             pomodoroTotal = totalPomodoro,
-            timerStreak = 0,
+            timerStreak = timerStreak,
             totalCompleted = dailyChallenges.count { it.isCompleted } + permanentChallenges.count { it.isCompleted }
         )
+
+        viewModelScope.launch {
+            try {
+                ServicePool.pomoService.addPomodoro()
+                Log.d("PomodoroAPI", "POST /pomos/add 성공")
+            } catch (e: Exception) {
+                Log.e("PomodoroAPI", "POST /pomos/add 실패: ${e.message}")
+            }
+        }
     }
 
     fun addMusicUrl(url: String) {
