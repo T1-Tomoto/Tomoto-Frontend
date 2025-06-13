@@ -330,10 +330,17 @@ class TomotoViewModel : ViewModel() {
 
     fun updateTask(updatedTask: ToDoItem) {
         viewModelScope.launch {
-            Log.d("ToDoList", "updateTask는 로컬에서만 변경됩니다. (서버 API 필요)")
-            val index = _allTasks.indexOfFirst { it.id == updatedTask.id }
-            if (index != -1) {
-                _allTasks[index] = updatedTask
+            try {
+                ServicePool.todoService.toggleTodo(updatedTask.id.toLong())
+
+                val index = _allTasks.indexOfFirst { it.id == updatedTask.id }
+                if (index != -1) {
+                    _allTasks[index] = updatedTask
+                }
+                Log.d("ToDoList", "ID ${updatedTask.id}의 완료 상태가 업데이트되었습니다.")
+
+            } catch (e: Exception) {
+                Log.e("ToDoList", "할 일 상태 업데이트 실패: ${e.message}")
             }
         }
     }
