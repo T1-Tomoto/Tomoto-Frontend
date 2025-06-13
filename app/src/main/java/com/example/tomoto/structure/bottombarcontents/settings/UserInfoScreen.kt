@@ -1,5 +1,6 @@
 package com.example.tomoto.structure.bottombarcontents.settings
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +45,12 @@ fun UserInfoScreen(
     navController: NavHostController, tomotoViewModel: TomotoViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val userInfo by tomotoViewModel.userInfo.collectAsState()
+
+    LaunchedEffect(Unit) {
+        tomotoViewModel.fetchUserInfo()
+    }
+    Log.i("유저정보", userInfo.toString())
 
     Scaffold(
         topBar = {
@@ -75,10 +84,6 @@ fun UserInfoScreen(
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
 
-            Text(
-                text = tomotoViewModel.userEmail,
-                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
-            )
 
             Spacer(modifier = Modifier.height(8.dp))
 

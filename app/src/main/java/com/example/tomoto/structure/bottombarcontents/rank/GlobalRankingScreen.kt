@@ -1,25 +1,40 @@
 package com.example.tomoto.structure.bottombarcontents.rank
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tomoto.R
+import com.example.tomoto.structure.datastructures.FriendsViewModel
 
 @Composable
-fun GlobalRankingScreen() {
+fun GlobalRankingScreen(friendsViewModel: FriendsViewModel = viewModel()) {
+
+    val userRanking by friendsViewModel.userRanking.collectAsState()
+
+    LaunchedEffect(Unit) {
+        Log.d("CheckEffect", "LaunchedEffect 진입")
+        friendsViewModel.fetchAllUserRanking()
+    }
+    Log.i("랭킹 결과",userRanking.toString())
+
     val users = listOf(
-        Friend(1, "현수", true, 5, 10, R.drawable.baseline_person_24),
-        Friend(2, "민수", false, 4, 9, R.drawable.baseline_person_24),
-        Friend(3, "지영", true, 3, 8, R.drawable.baseline_person_24),
-        Friend(4, "도윤", true, 2, 7, R.drawable.baseline_person_24),
-        Friend(5, "영희", false, 1, 6, R.drawable.baseline_person_24)
+        Friend("현수", 5, 10, R.drawable.baseline_person_24),
+        Friend("민수", 4, 9, R.drawable.baseline_person_24),
+        Friend("지영", 3, 8, R.drawable.baseline_person_24),
+        Friend("도윤", 2, 7, R.drawable.baseline_person_24),
+        Friend("영희", 1, 6, R.drawable.baseline_person_24)
     )
 
     Column(
