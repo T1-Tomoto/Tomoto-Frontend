@@ -133,14 +133,14 @@ class TomotoViewModel : ViewModel() {
         var newLevel = _userLevel.value.level
         var newThreshold = _userLevel.value.xpForNextLevel
 
+        val req = LevelUpdateReq(newLevel, newXp)
         while (newXp >= newThreshold) {
             newXp -= newThreshold
             newLevel++
             newThreshold = LevelConfig.xpThresholdFor(newLevel)
             viewModelScope.launch {
-                ServicePool.userService.levelUp()
+                ServicePool.userService.levelUpdate(req)
             }
-        }
 
         _userLevel.value = UserLevelState(
             level = newLevel,
@@ -148,16 +148,16 @@ class TomotoViewModel : ViewModel() {
             xpForNextLevel = newThreshold
         )
 
-//        viewModelScope.launch {
-//            val levelUpdateRequest = LevelUpdateReq(level = newLevel.toString(), xp = newXp.toString()) // LevelUpdateReq의 실제 필드에 맞게 수정해야 합니다.
-//
-//            try {
-//                ServicePool.userService.levelUpdate(levelUpdateRequest)
-//                Log.d("TomotoViewModel", "Level update request sent: $levelUpdateRequest")
-//            } catch (e: Exception) {
-//                Log.e("TomotoViewModel", "Failed to send level update: ${e.message}", e)
-//            }
-//        }
+        viewModelScope.launch {
+            val levelUpdateRequest = LevelUpdateReq(level = newLevel, xp = newXp) // LevelUpdateReq의 실제 필드에 맞게 수정해야 합니다.
+
+            try {
+                ServicePool.userService.levelUpdate(levelUpdateRequest)
+                Log.d("TomotoViewModel", "Level update request sent: $levelUpdateRequest")
+            } catch (e: Exception) {
+                Log.e("TomotoViewModel", "Failed to send level update: ${e.message}", e)
+            }
+        }
     }
 
     fun initializeUserLevelFromDb(level: Int, xp: Int) {
@@ -240,7 +240,7 @@ class TomotoViewModel : ViewModel() {
                 val info = ServicePool.userService.info()
                 Log.i("유저 정보", info.toString())
                 _userInfo.value = info
-                initializeUserLevelFromDb(info.level, 0)
+                initializeUserLevelFromDb(info.level, info.xp)
             } catch (e: Exception) {
                 Log.e("UserInfo", "유저 정보 로딩 실패: ${e.message}")
             }
@@ -330,10 +330,17 @@ class TomotoViewModel : ViewModel() {
 
     fun updateTask(updatedTask: ToDoItem) {
         viewModelScope.launch {
-            Log.d("ToDoList", "updateTask는 로컬에서만 변경됩니다. (서버 API 필요)")
-            val index = _allTasks.indexOfFirst { it.id == updatedTask.id }
-            if (index != -1) {
-                _allTasks[index] = updatedTask
+            try {
+                ServicePool.todoService.toggleTodo(updatedTask.id.toLong())
+
+                val index = _allTasks.indexOfFirst { it.id == updatedTask.id }
+                if (index != -1) {
+                    _allTasks[index] = updatedTask
+                }
+                Log.d("ToDoList", "ID ${updatedTask.id}의 완료 상태가 업데이트되었습니다.")
+
+            } catch (e: Exception) {
+                Log.e("ToDoList", "할 일 상태 업데이트 실패: ${e.message}")
             }
         }
     }
