@@ -3,6 +3,7 @@ package com.example.tomoto.structure.datastructures
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tomoto.structure.data.dto.request.AddFriendReq
 import com.example.tomoto.structure.data.dto.response.AllUserRankRes
 import com.example.tomoto.structure.data.dto.response.FriendsRankRes
 import com.example.tomoto.structure.data.service.ServicePool
@@ -44,8 +45,18 @@ class FriendsViewModel : ViewModel() {
         }
     }
 
-    fun fetchAddFriend(nicknameInput: String){
-        //TODO: 백엔드 로직. 안 건들이셔도 돼요
+    fun fetchAddFriend( addFriendReq: AddFriendReq) {
+        viewModelScope.launch {
+            try {
+                ServicePool.rankService.addFriend(addFriendReq)
+                Log.i("유저 {}가 {}를 친구로 추가했습니다.", addFriendReq.friendName);
+                Log.i("친구 추가", "${addFriendReq.friendName} 친구 추가 성공")
+                fetchFriendsRanking()
+
+            } catch (e: Exception) {
+                Log.e("친구 추가 에러", e.message ?: "예외 발생")
+            }
+        }
     }
 
     fun fetchDeleteFriend(nickname: String){
