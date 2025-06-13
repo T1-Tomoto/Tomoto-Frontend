@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tomoto.R
+import com.example.tomoto.structure.data.dto.request.AddFriendReq
 import com.example.tomoto.structure.datastructures.FriendsViewModel
 import kotlinx.coroutines.launch
 
@@ -118,10 +119,11 @@ fun FriendRankingScreen(viewModel: FriendsViewModel= viewModel()) {
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        val result = viewModel.fetchAddFriend(nicknameInput)
+                        val dto = AddFriendReq(friendName = nicknameInput)
+                        viewModel.fetchAddFriend(dto)
+//                        val result = viewModel.fetchAddFriend(nicknameInput)
                         snackbarHostState.showSnackbar(
-                            message = result.toString(),
-                            actionLabel = null,
+                            message = dto.toString(),
                             duration = SnackbarDuration.Short )
                         nicknameInput = ""
                     }

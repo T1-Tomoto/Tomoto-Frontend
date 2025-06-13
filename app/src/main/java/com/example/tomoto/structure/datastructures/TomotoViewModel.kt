@@ -133,11 +133,14 @@ class TomotoViewModel : ViewModel() {
         var newLevel = _userLevel.value.level
         var newThreshold = _userLevel.value.xpForNextLevel
 
+        val req = LevelUpdateReq(newLevel, newXp)
         while (newXp >= newThreshold) {
             newXp -= newThreshold
             newLevel++
             newThreshold = LevelConfig.xpThresholdFor(newLevel)
-        }
+            viewModelScope.launch {
+                ServicePool.userService.levelUpdate(req)
+            }
 
         _userLevel.value = UserLevelState(
             level = newLevel,
