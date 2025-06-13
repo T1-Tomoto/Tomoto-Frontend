@@ -8,7 +8,9 @@ import com.example.tomoto.structure.data.dto.response.UserTokenRes
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface UserService {
     @POST("users/signup")
@@ -20,7 +22,7 @@ interface UserService {
     @GET("users/info")
     suspend fun info(): UserInfoRes
 
-    @POST("users/level")
+    @PATCH("users/level")
     suspend fun levelUpdate(@Body req: LevelUpdateReq) : Response<Unit>
 
 }
