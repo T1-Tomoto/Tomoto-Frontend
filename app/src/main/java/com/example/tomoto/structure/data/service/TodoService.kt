@@ -5,7 +5,9 @@ import com.example.tomoto.structure.data.dto.response.AddTodoRes
 import com.example.tomoto.structure.data.dto.response.AllTodoRes
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -17,6 +19,9 @@ interface TodoService {
     @POST("/todos/add")
     suspend fun addTodo(@Body request: AddTodoReq): AddTodoRes
 
-    @POST("/todos/delete/{todoId}")
+    @DELETE("/todos/delete/{todoId}")
     suspend fun deleteTodo(@Path("todoId") todoId: Long): Response<Unit>
+
+    @PATCH("/todos/{todoId}")
+    suspend fun toggleTodo(@Path("todoId") todoId: Long): Response<Unit>
 }
