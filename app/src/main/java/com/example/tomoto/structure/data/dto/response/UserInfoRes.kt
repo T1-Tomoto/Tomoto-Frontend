@@ -9,4 +9,5 @@ data class UserInfoRes(
     val level: Int,
     val xp: Int,
     val totalPomo: Int,
+    val challenges: List<Boolean>
 )

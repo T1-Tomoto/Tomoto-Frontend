@@ -142,34 +142,22 @@ class TomotoViewModel : ViewModel() {
         var newLevel = _userLevel.value.level
         var newThreshold = _userLevel.value.xpForNextLevel
 
-        val req = LevelUpdateReq(newLevel, newXp)
         while (newXp >= newThreshold) {
             newXp -= newThreshold
             newLevel++
             newThreshold = LevelConfig.xpThresholdFor(newLevel)
-            viewModelScope.launch {
-                ServicePool.userService.levelUpdate(req)
-            }
 
-            _userLevel.value = UserLevelState(
-                level = newLevel,
-                xp = newXp,
-                xpForNextLevel = newThreshold
-            )
+        }
 
-            viewModelScope.launch {
-                val levelUpdateRequest = LevelUpdateReq(
-                    level = newLevel,
-                    xp = newXp
-                ) // LevelUpdateReq의 실제 필드에 맞게 수정해야 합니다.
+        _userLevel.value = UserLevelState(
+            level = newLevel,
+            xp = newXp,
+            xpForNextLevel = newThreshold
+        )
 
-                try {
-                    ServicePool.userService.levelUpdate(levelUpdateRequest)
-                    Log.d("TomotoViewModel", "Level update request sent: $levelUpdateRequest")
-                } catch (e: Exception) {
-                    Log.e("TomotoViewModel", "Failed to send level update: ${e.message}", e)
-                }
-            }
+        viewModelScope.launch {
+            val req = LevelUpdateReq(newLevel, newXp)
+            ServicePool.userService.levelUpdate(req)
         }
     }
 
