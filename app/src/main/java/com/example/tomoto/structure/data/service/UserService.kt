@@ -20,7 +20,6 @@ interface UserService {
     @GET("users/info")
     suspend fun info(): UserInfoRes
 
-    //변경 필요
     @POST("users/level")
     suspend fun levelUpdate(@Body req: LevelUpdateReq) : Response<Unit>
 
