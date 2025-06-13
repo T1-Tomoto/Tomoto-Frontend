@@ -55,7 +55,7 @@ class TomotoViewModel : ViewModel() {
     private val _userLevel = mutableStateOf(UserLevelState())
     val userLevel: UserLevelState get() = _userLevel.value
 
-    fun updateIntroduce(newIntroduce : String){
+    fun updateIntroduce(newIntroduce: String) {
         introduce = newIntroduce
     }
 
@@ -229,6 +229,7 @@ class TomotoViewModel : ViewModel() {
             friendList.removeAll { it.nickname == nickname }
         }
     }
+
     //todo
     private val _allTasks = mutableStateListOf<ToDoItem>()
     val allTasks: List<ToDoItem> get() = _allTasks
