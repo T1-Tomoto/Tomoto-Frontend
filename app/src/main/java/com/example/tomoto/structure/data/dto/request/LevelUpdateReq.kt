@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LevelUpdateReq(
-    val level: String,
-    val xp: String,
+    val level: Int,
+    val xp: Int,
 )
