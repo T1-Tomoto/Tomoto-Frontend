@@ -59,7 +59,7 @@ class TomotoViewModel : ViewModel() {
         introduce = newIntroduce
     }
 
-    fun incrementPomodoroAndEvaluate(context: Context) {
+    fun incrementPomodoroAndEvaluate(context: Context, timerStreak: Int) {
         val newToday = _todayPomodoro.value + 1
         _todayPomodoro.value = newToday
 
@@ -70,9 +70,18 @@ class TomotoViewModel : ViewModel() {
         evaluateDailyChallenges(context, pomodoroCount = newToday)
         evaluatePermanentChallenges(
             pomodoroTotal = totalPomodoro,
-            timerStreak = 0,
+            timerStreak = timerStreak,
             totalCompleted = dailyChallenges.count { it.isCompleted } + permanentChallenges.count { it.isCompleted }
         )
+
+        viewModelScope.launch {
+            try {
+                ServicePool.pomoService.addPomodoro()
+                Log.d("PomodoroAPI", "POST /pomos/add 성공")
+            } catch (e: Exception) {
+                Log.e("PomodoroAPI", "POST /pomos/add 실패: ${e.message}")
+            }
+        }
     }
 
     fun addMusicUrl(url: String) {
@@ -133,34 +142,22 @@ class TomotoViewModel : ViewModel() {
         var newLevel = _userLevel.value.level
         var newThreshold = _userLevel.value.xpForNextLevel
 
-        val req = LevelUpdateReq(newLevel, newXp)
         while (newXp >= newThreshold) {
             newXp -= newThreshold
             newLevel++
             newThreshold = LevelConfig.xpThresholdFor(newLevel)
-            viewModelScope.launch {
-                ServicePool.userService.levelUpdate(req)
-            }
 
-            _userLevel.value = UserLevelState(
-                level = newLevel,
-                xp = newXp,
-                xpForNextLevel = newThreshold
-            )
+        }
 
-            viewModelScope.launch {
-                val levelUpdateRequest = LevelUpdateReq(
-                    level = newLevel,
-                    xp = newXp
-                ) // LevelUpdateReq의 실제 필드에 맞게 수정해야 합니다.
+        _userLevel.value = UserLevelState(
+            level = newLevel,
+            xp = newXp,
+            xpForNextLevel = newThreshold
+        )
 
-                try {
-                    ServicePool.userService.levelUpdate(levelUpdateRequest)
-                    Log.d("TomotoViewModel", "Level update request sent: $levelUpdateRequest")
-                } catch (e: Exception) {
-                    Log.e("TomotoViewModel", "Failed to send level update: ${e.message}", e)
-                }
-            }
+        viewModelScope.launch {
+            val req = LevelUpdateReq(newLevel, newXp)
+            ServicePool.userService.levelUpdate(req)
         }
     }
 
