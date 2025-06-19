@@ -37,17 +37,30 @@ fun TimerPlayScreen(
     pomoCount: Int = 0,
     onCancel: () -> Unit,
     viewModel: TomotoViewModel,
-    context: Context
+    context: Context,
+    // isExampleMode 파라미터 추가
+    isExampleMode: Boolean = false // 기본값은 false (실제 타이머)
 ) {
-    val focusTime = 1 * 60 / 10 // 실제로 25분
-    val restTime = 1 * 60 / 10 // 실제로 5분
-    val longRestTime = 1 * 60 / 6 // 실제로 30분
+    // 실제 타이머 시간 (25분, 5분, 30분)
+    val realFocusTime = 25 * 60
+    val realRestTime = 5 * 60
+    val realLongRestTime = 30 * 60
 
-    var isPlaying by remember { mutableStateOf(true) }
+    // 예시 타이머 시간 (6초)
+    // 기존 코드에서 1 * 60 / 1 0 = 6초로 설정되어 있었으므로 이 값을 활용
+    val exampleTime = 6
+
+    // isExampleMode 값에 따라 타이머 시간 설정
+    val focusTime = if (isExampleMode) exampleTime else realFocusTime
+    val restTime = if (isExampleMode) exampleTime else realRestTime
+    val longRestTime = if (isExampleMode) exampleTime else realLongRestTime
+
+
+    var isPlaying by remember { mutableStateOf(true) } // 시작 시 바로 타이머 시작
     var showVolume by remember { mutableStateOf(true) }
     var currentPhase by remember { mutableStateOf("FOCUS") }
     var currentPomoIndex by remember { mutableStateOf(0) }
-    var timer by remember { mutableStateOf(focusTime) }
+    var timer by remember { mutableStateOf(focusTime) } // 설정된 focusTime으로 초기화
     var focusStreak by remember { mutableStateOf(0) }
 
     val musicUrl = viewModel.musicList.firstOrNull() ?: ""
@@ -62,11 +75,13 @@ fun TimerPlayScreen(
                     focusStreak++
                     viewModel.incrementPomodoroAndEvaluate(context, focusStreak)
                     currentPhase = "REST"
+                    // 설정된 longRestTime 또는 restTime 사용
                     timer = if ((currentPomoIndex + 1) % 4 == 0) longRestTime else restTime
                 } else {
                     currentPomoIndex++
                     if (currentPomoIndex < pomoCount) {
                         currentPhase = "FOCUS"
+                        // 설정된 focusTime 사용
                         timer = focusTime
                     } else {
                         isPlaying = false
@@ -83,12 +98,15 @@ fun TimerPlayScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 유튜브 WebView (뒤에 배치)
-        if (musicUrl.isNotBlank()) {
+        // isPlaying이 true일 때만 WebView를 로드하여 불필요한 리소스 사용 줄임
+        if (musicUrl.isNotBlank() && isPlaying) {
             AndroidView(
                 modifier = Modifier.matchParentSize(),
                 factory = {
                     WebView(it).apply {
                         settings.javaScriptEnabled = true
+                        // mediaPlaybackRequiresUserGesture = false 설정은 모바일에서 자동 재생을 완벽히 보장하지 않음
+                        settings.mediaPlaybackRequiresUserGesture = false
                         loadUrl(musicUrl.replace("watch?v=", "embed/") + "?autoplay=1&mute=${if (showVolume) 0 else 1}")
                     }
                 }

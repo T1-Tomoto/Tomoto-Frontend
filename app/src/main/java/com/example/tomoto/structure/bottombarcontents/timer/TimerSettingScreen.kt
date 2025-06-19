@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -23,7 +22,7 @@ import com.example.tomoto.structure.datastructures.TomotoViewModel
 @Composable
 fun TimerSettingScreen(
     viewModel: TomotoViewModel,
-    onStartFocus: (String, Int) -> Unit
+    onStartFocus: (String, Int, Boolean) -> Unit
 ) {
     var task by remember { mutableStateOf("") }
     var pomoCount by remember { mutableStateOf(5) }
@@ -122,16 +121,36 @@ fun TimerSettingScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                if (task.isNotBlank()) onStartFocus(task, pomoCount)
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = highlightColor)
+        // 두 버튼을 위한 Row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = "집중 시작",
-                color = Color.Black
-            )
+            Button(
+                onClick = {
+                    onStartFocus("예시 집중", pomoCount, true)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+            ) {
+                Text(
+                    text = "예시",
+                    color = Color.Black
+                )
+            }
+
+            Button(
+                onClick = {
+                    if (task.isNotBlank()) {
+                        onStartFocus(task, pomoCount, false)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = highlightColor)
+            ) {
+                Text(
+                    text = "집중 시작",
+                    color = Color.Black
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(48.dp))
