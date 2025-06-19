@@ -78,7 +78,7 @@ class TomotoViewModel : ViewModel() {
             ChallengePrefs.saveTodayPomodoro(context, newToday)
         }
 
-        evaluateDailyChallenges(context, pomodoroCount = newToday)
+        evaluateDailyChallenges(context, timerStreak, pomodoroCount = newToday)
         evaluatePermanentChallenges(
             pomodoroTotal = totalPomodoro,
             timerStreak = timerStreak,
@@ -209,25 +209,26 @@ class TomotoViewModel : ViewModel() {
         _userLevel.value = UserLevelState.fromDatabase(level, xp)
     }
 
-    fun evaluateDailyChallenges(context: Context, pomodoroCount: Int) {
+    fun evaluateDailyChallenges(context: Context, timerStreak: Int,pomodoroCount: Int) {
         ChallengeManager.checkDailyChallengesAfterTimer(
             context = context,
             scope = viewModelScope,
             dailyChallenges = dailyChallenges,
             userLevel = userLevel,
             pomodoroCount = pomodoroCount,
-            viewModel = this
+            viewModel = this,
+            timerStreak = timerStreak
         )
     }
 
     fun evaluatePermanentChallenges(pomodoroTotal: Int, timerStreak: Int, totalCompleted: Int) {
         ChallengeManager.checkPermanentChallenges(
             permanentChallenges = permanentChallenges,
-            userLevel = userLevel,
             pomodoroTotal = pomodoroTotal,
             timerStreak = timerStreak,
             totalCompleted = totalCompleted,
-            viewModel = this
+            viewModel = this,
+            scope = viewModelScope
         )
     }
 
