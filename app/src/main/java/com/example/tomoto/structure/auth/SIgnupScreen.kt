@@ -19,14 +19,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.tomoto.structure.datastructures.AuthViewModel
 
 @Composable
 fun SignupScreen(
+    viewModel: AuthViewModel,
     onSignupClick: (String, String, String) -> Unit = { _, _, _ -> },
-    onBackToLogin: () -> Unit = {}
+    onBackToLogin: () -> Unit = {},
+    errorMessage: String
 ) {
     var id by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -92,11 +96,12 @@ fun SignupScreen(
         ) {
             Text("로그인 화면으로 돌아가기")
         }
+        if (viewModel.errorMessage.isNotEmpty()) {
+            Text(
+                text = viewModel.errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
     }
-}
-
-@Preview
-@Composable
-private fun SignupPreview() {
-    SignupScreen()
 }
