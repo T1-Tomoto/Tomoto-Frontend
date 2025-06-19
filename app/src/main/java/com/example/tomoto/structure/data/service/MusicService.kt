@@ -1,6 +1,5 @@
 package com.example.tomoto.structure.data.service
 
-import com.example.tomoto.structure.data.dto.request.AddTodoReq
 import com.example.tomoto.structure.data.dto.request.UpdateMusicReq
 import com.example.tomoto.structure.data.dto.response.MusicListRes
 import retrofit2.http.Body
@@ -21,6 +20,6 @@ interface MusicService {
     suspend fun deleteMusic(@Query("url") url: String)
 
     @PATCH("/musics")
-    suspend fun updatdMusic(@Body request: UpdateMusicReq)
+    suspend fun updateMusic(@Body request: UpdateMusicReq)
 
 }

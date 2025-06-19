@@ -11,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface UserService {
     @POST("users/signup")
@@ -27,5 +28,8 @@ interface UserService {
 
     @PATCH("users/challenges")
     suspend fun challengeUpdate(@Body req: LevelUpdateReq) : Response<Unit>
+
+    @PATCH("users/info/bio")
+    suspend fun updateUserBio(@Query("newBio") newBio: String)
 
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.delay
 import com.example.tomoto.R
 import com.example.tomoto.structure.datastructures.TomotoViewModel
+import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
 fun TimerPlayScreen(
@@ -59,8 +61,8 @@ fun TimerPlayScreen(
     var timer by remember { mutableStateOf(focusTime) } // 설정된 focusTime으로 초기화
     var focusStreak by remember { mutableStateOf(0) }
 
-    val musicUrl = viewModel.musicList.firstOrNull() ?: ""
-
+    val musicListState by viewModel.musicList.collectAsState()
+    val musicUrl = musicListState.firstOrNull() ?: ""
     LaunchedEffect(isPlaying, currentPhase, currentPomoIndex) {
         while (isPlaying && currentPomoIndex < pomoCount) {
             delay(1000)
