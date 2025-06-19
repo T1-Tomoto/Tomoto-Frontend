@@ -40,7 +40,8 @@ class TomotoViewModel : ViewModel() {
 
     val userName: String get() = userInfo.value?.nickname ?: "Unknown"
     val totalPomodoro: Int get() = userInfo.value?.totalPomo ?: 0
-    var introduce = "default introduce text1"
+    val introduce: String get() = userInfo.value?.bio ?: "default introduce text1"
+
     var friendList = mutableStateListOf<Friend>()
         private set
     var musicList = mutableStateListOf<String>()
@@ -56,8 +57,13 @@ class TomotoViewModel : ViewModel() {
     private val _userLevel = mutableStateOf(UserLevelState())
     val userLevel: UserLevelState get() = _userLevel.value
 
+    fun logIntroduceInfo() {
+        Log.i("introduce", "userInfo.value?.bio: ${userInfo.value?.bio}")
+        Log.i("introduce", "introduce 변수: $introduce")
+    }
+
     fun updateIntroduce(newIntroduce: String) {
-        introduce = newIntroduce
+        _userInfo.value = _userInfo.value?.copy(bio = newIntroduce)
     }
 
     fun incrementPomodoroAndEvaluate(context: Context, timerStreak: Int) {
@@ -251,6 +257,7 @@ class TomotoViewModel : ViewModel() {
                 val info = ServicePool.userService.info()
                 Log.i("유저 정보", info.toString())
                 _userInfo.value = info
+                Log.i("introduce", "bio 값: ${info.bio}")
                 initializeUserLevelFromDb(info.level, info.xp)
             } catch (e: Exception) {
                 Log.e("UserInfo", "유저 정보 로딩 실패: ${e.message}")

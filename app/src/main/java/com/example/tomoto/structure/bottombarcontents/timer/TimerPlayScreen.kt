@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -97,15 +99,16 @@ fun TimerPlayScreen(
     val seconds = timer % 60
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 유튜브 WebView (뒤에 배치)
-        // isPlaying이 true일 때만 WebView를 로드하여 불필요한 리소스 사용 줄임
         if (musicUrl.isNotBlank() && isPlaying) {
             AndroidView(
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(1.dp)
+                    .alpha(0f),
+
                 factory = {
                     WebView(it).apply {
                         settings.javaScriptEnabled = true
-                        // mediaPlaybackRequiresUserGesture = false 설정은 모바일에서 자동 재생을 완벽히 보장하지 않음
                         settings.mediaPlaybackRequiresUserGesture = false
                         loadUrl(musicUrl.replace("watch?v=", "embed/") + "?autoplay=1&mute=${if (showVolume) 0 else 1}")
                     }

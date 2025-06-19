@@ -7,6 +7,5 @@ data class AllUserRankRes(
     val userId: Long,
     val nickname: String,
     val level: Int,
-    val xp: Int,
-    val bio: String? = null
+    val xp: Int
 )
