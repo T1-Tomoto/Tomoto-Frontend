@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tomoto.R
 import com.example.tomoto.structure.bottombarcontents.rank.Friend
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoItem
+import com.example.tomoto.structure.data.dto.request.AddFriendReq
 import com.example.tomoto.structure.data.dto.request.AddTodoReq
 import com.example.tomoto.structure.data.dto.request.LevelUpdateReq
 import com.example.tomoto.structure.data.dto.response.UserInfoRes
@@ -187,34 +188,42 @@ class TomotoViewModel : ViewModel() {
         )
     }
 
-    fun loadFriendsFromDb() {
+    // 친구 랭킹 관련 ------------------------------------
+
+    val friendsRanking = MutableStateFlow<List<Friend>>(emptyList())
+
+    fun fetchFriendsRanking() {
         viewModelScope.launch {
-            val dbFriends = listOf(
-                Friend("현수", 5, 10, R.drawable.baseline_person_24),
-                Friend("민수", 2, 8, R.drawable.baseline_person_24),
-                Friend("지영", 3, 9, R.drawable.baseline_person_24)
-            )
-            friendList.clear()
-            friendList.addAll(dbFriends)
+            try {
+                val res = ServicePool.rankService.getFriendsRanking()
+                friendsRanking.value = res.map {
+                    Friend(it.nickname, it.pomoNum, 0, R.drawable.baseline_person_24)
+                }.sortedByDescending { it.pomodoroCount }
+            } catch (e: Exception) {
+                Log.e("FriendRanking", "친구 랭킹 불러오기 실패: ${e.message}")
+            }
         }
     }
 
-    suspend fun tryAddFriend(nickname: String): String {
-        if (friendList.any { it.nickname == nickname }) {
-            return "이미 친구 목록에 있습니다"
-        }
-        val userExistsInDb = listOf("현수", "민수", "지영", "동건").contains(nickname)
-        return if (userExistsInDb) {
-            friendList.add(Friend(nickname, 0, 0, R.drawable.baseline_person_24))
-            "친구 추가가 되었습니다"
-        } else {
-            "해당 닉네임의 유저가 없습니다"
+    fun fetchAddFriend(req: AddFriendReq) {
+        viewModelScope.launch {
+            try {
+                ServicePool.rankService.addFriend(req)
+                fetchFriendsRanking()  // 친구 추가 후 목록 갱신
+            } catch (e: Exception) {
+                Log.e("FriendAdd", "친구 추가 실패: ${e.message}")
+            }
         }
     }
 
-    fun deleteFriend(nickname: String) {
+    fun fetchDeleteFriend(nickname: String) {
         viewModelScope.launch {
-            friendList.removeAll { it.nickname == nickname }
+            try {
+                ServicePool.rankService.deleteFriend(nickname)
+                fetchFriendsRanking()  // 삭제 후 목록 갱신
+            } catch (e: Exception) {
+                Log.e("FriendDelete", "친구 삭제 실패: ${e.message}")
+            }
         }
     }
 
