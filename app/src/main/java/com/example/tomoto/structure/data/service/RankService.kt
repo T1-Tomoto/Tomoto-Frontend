@@ -6,6 +6,8 @@ import com.example.tomoto.structure.data.dto.response.FriendsRankRes
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.DELETE
+import retrofit2.http.Query
 
 interface RankService {
 
@@ -18,4 +20,6 @@ interface RankService {
     @POST("/ranking/friends")
     suspend fun addFriend(@Body request: AddFriendReq)
 
+    @DELETE("/ranking/friends")
+    suspend fun deleteFriend(@Query("nickname") nickname: String)
 }

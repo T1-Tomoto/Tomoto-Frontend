@@ -22,35 +22,23 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tomoto.R
+import com.example.tomoto.structure.datastructures.TomotoViewModel
 import com.example.tomoto.structure.data.dto.request.AddFriendReq
-import com.example.tomoto.structure.datastructures.FriendsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun FriendRankingScreen(viewModel: FriendsViewModel= viewModel()) {
+fun FriendRankingScreen(viewModel: TomotoViewModel = viewModel()) {
 
     val friendsRanking by viewModel.friendsRanking.collectAsState()
 
     LaunchedEffect(Unit) {
-        Log.d("CheckEffect", "LaunchedEffect 진입")
         viewModel.fetchFriendsRanking()
     }
-    Log.i("친구 랭킹 결과",friendsRanking.toString())
-
-    val friends = listOf(
-        Friend("현수", 5, 10, R.drawable.baseline_person_24),
-        Friend("민수", 2, 8, R.drawable.baseline_person_24),
-        Friend("지영", 3, 9, R.drawable.baseline_person_24),
-    )
 
     var nicknameInput by remember { mutableStateOf("") }
     var friendToDelete by remember { mutableStateOf<Friend?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-//    LaunchedEffect(Unit) {
-//        friendsViewModel.loadFriendsFromDb()
-//    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -68,7 +56,7 @@ fun FriendRankingScreen(viewModel: FriendsViewModel= viewModel()) {
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
-                items(friends) { friend ->
+                items(friendsRanking) { friend ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -121,10 +109,10 @@ fun FriendRankingScreen(viewModel: FriendsViewModel= viewModel()) {
                     coroutineScope.launch {
                         val dto = AddFriendReq(friendName = nicknameInput)
                         viewModel.fetchAddFriend(dto)
-//                        val result = viewModel.fetchAddFriend(nicknameInput)
                         snackbarHostState.showSnackbar(
-                            message = dto.toString(),
-                            duration = SnackbarDuration.Short )
+                            message = "${dto.friendName}님을 친구로 추가했어요!",
+                            duration = SnackbarDuration.Short
+                        )
                         nicknameInput = ""
                     }
                 },
