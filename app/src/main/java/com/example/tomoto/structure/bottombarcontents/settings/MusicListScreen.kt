@@ -14,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,14 +29,19 @@ import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.AddM
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.MusicCard
 import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.UserInfoTopAppBar
 import com.example.tomoto.structure.datastructures.TomotoViewModel
+import kotlinx.coroutines.flow.forEach
 
 @Composable
 fun MusicListScreen(navController : NavHostController, tomotoViewModel:TomotoViewModel) {
-    val musicList = tomotoViewModel.musicList
+    val musicList by tomotoViewModel.musicList.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
     var editingUrl by remember { mutableStateOf("") }
 
+
+    LaunchedEffect(Unit) {
+        tomotoViewModel.fetchMusicList()
+    }
 
     Scaffold(
         floatingActionButton = {
