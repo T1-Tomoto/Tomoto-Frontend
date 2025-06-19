@@ -40,19 +40,13 @@ fun TimerPlayScreen(
     onCancel: () -> Unit,
     viewModel: TomotoViewModel,
     context: Context,
-    // isExampleMode 파라미터 추가
-    isExampleMode: Boolean = false // 기본값은 false (실제 타이머)
+    isExampleMode: Boolean = false
 ) {
-    // 실제 타이머 시간 (25분, 5분, 30분)
     val realFocusTime = 25 * 60
     val realRestTime = 5 * 60
     val realLongRestTime = 30 * 60
-
-    // 예시 타이머 시간 (6초)
-    // 기존 코드에서 1 * 60 / 1 0 = 6초로 설정되어 있었으므로 이 값을 활용
     val exampleTime = 6
 
-    // isExampleMode 값에 따라 타이머 시간 설정
     val focusTime = if (isExampleMode) exampleTime else realFocusTime
     val restTime = if (isExampleMode) exampleTime else realRestTime
     val longRestTime = if (isExampleMode) exampleTime else realLongRestTime
@@ -77,13 +71,11 @@ fun TimerPlayScreen(
                     focusStreak++
                     viewModel.incrementPomodoroAndEvaluate(context, focusStreak)
                     currentPhase = "REST"
-                    // 설정된 longRestTime 또는 restTime 사용
                     timer = if ((currentPomoIndex + 1) % 4 == 0) longRestTime else restTime
                 } else {
                     currentPomoIndex++
                     if (currentPomoIndex < pomoCount) {
                         currentPhase = "FOCUS"
-                        // 설정된 focusTime 사용
                         timer = focusTime
                     } else {
                         isPlaying = false

@@ -64,7 +64,7 @@ fun MusicListScreen(navController : NavHostController, tomotoViewModel:TomotoVie
                 Text(
                     "추가된 음악이 없습니다.",
                     color = Color.Gray,
-                    modifier = Modifier.offset(y = (-40).dp) // 중앙보다 위로 40dp 이동
+                    modifier = Modifier.offset(y = (-40).dp)
                 )
             } else {
                 Column(
