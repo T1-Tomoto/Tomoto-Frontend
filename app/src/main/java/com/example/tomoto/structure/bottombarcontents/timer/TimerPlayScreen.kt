@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,17 +39,24 @@ fun TimerPlayScreen(
     pomoCount: Int = 0,
     onCancel: () -> Unit,
     viewModel: TomotoViewModel,
-    context: Context
+    context: Context,
+    isExampleMode: Boolean = false
 ) {
-    val focusTime = 1 * 60 / 10 // 실제로 25분
-    val restTime = 1 * 60 / 10 // 실제로 5분
-    val longRestTime = 1 * 60 / 6 // 실제로 30분
+    val realFocusTime = 25 * 60
+    val realRestTime = 5 * 60
+    val realLongRestTime = 30 * 60
+    val exampleTime = 6
 
-    var isPlaying by remember { mutableStateOf(true) }
+    val focusTime = if (isExampleMode) exampleTime else realFocusTime
+    val restTime = if (isExampleMode) exampleTime else realRestTime
+    val longRestTime = if (isExampleMode) exampleTime else realLongRestTime
+
+
+    var isPlaying by remember { mutableStateOf(true) } // 시작 시 바로 타이머 시작
     var showVolume by remember { mutableStateOf(true) }
     var currentPhase by remember { mutableStateOf("FOCUS") }
     var currentPomoIndex by remember { mutableStateOf(0) }
-    var timer by remember { mutableStateOf(focusTime) }
+    var timer by remember { mutableStateOf(focusTime) } // 설정된 focusTime으로 초기화
     var focusStreak by remember { mutableStateOf(0) }
 
     val musicUrl = viewModel.musicList.firstOrNull() ?: ""
@@ -82,13 +91,17 @@ fun TimerPlayScreen(
     val seconds = timer % 60
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 유튜브 WebView (뒤에 배치)
-        if (musicUrl.isNotBlank()) {
+        if (musicUrl.isNotBlank() && isPlaying) {
             AndroidView(
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(1.dp)
+                    .alpha(0f),
+
                 factory = {
                     WebView(it).apply {
                         settings.javaScriptEnabled = true
+                        settings.mediaPlaybackRequiresUserGesture = false
                         loadUrl(musicUrl.replace("watch?v=", "embed/") + "?autoplay=1&mute=${if (showVolume) 0 else 1}")
                     }
                 }

@@ -8,4 +8,5 @@ object ServicePool {
     val rankService: RankService = ApiFactory.create<RankService>()
     val pomoService: PomoService = ApiFactory.create<PomoService>()
     val todoService: TodoService = ApiFactory.create<TodoService>()
+    val musicService: MusicService = ApiFactory.create<MusicService>()
 }

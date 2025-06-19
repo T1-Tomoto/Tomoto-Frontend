@@ -1,5 +1,6 @@
 package com.example.tomoto.structure.bottombarcontents.timer
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -15,26 +16,34 @@ fun TimerNavGraph(viewModel: TomotoViewModel) {
 
     NavHost(navController = navController, startDestination = "setting") {
         composable("setting") {
-            TimerSettingScreen(viewModel = viewModel) { taskName, pomoCount ->
-                navController.navigate("timer/$taskName/$pomoCount")
+            TimerSettingScreen(viewModel = viewModel) { taskName, pomoCount, isExampleMode ->
+                navController.navigate("timer/$taskName/$pomoCount?isExampleMode=$isExampleMode")
+
             }
         }
 
         composable(
-            route = "timer/{taskName}/{pomoCount}",
+            route = "timer/{taskName}/{pomoCount}?isExampleMode={isExampleMode}",
             arguments = listOf(
                 navArgument("taskName") { type = NavType.StringType },
-                navArgument("pomoCount") { type = NavType.IntType }
+                navArgument("pomoCount") { type = NavType.IntType },
+                navArgument("isExampleMode") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
             )
         ) { backStackEntry ->
             val name = backStackEntry.arguments?.getString("taskName") ?: ""
             val count = backStackEntry.arguments?.getInt("pomoCount") ?: 0
+            val isExampleMode = backStackEntry.arguments?.getBoolean("isExampleMode") ?: false
+
             TimerPlayScreen(
                 taskName = name,
                 pomoCount = count,
                 onCancel = { navController.popBackStack() },
                 viewModel = viewModel,
-                context = LocalContext.current
+                context = LocalContext.current,
+                isExampleMode = isExampleMode
             )
         }
     }
