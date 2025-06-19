@@ -1,6 +1,5 @@
 package com.example.tomoto.structure.data.service
 
-import com.example.tomoto.structure.data.dto.request.ChallengeUpdateReq
 import com.example.tomoto.structure.data.dto.request.LevelUpdateReq
 import com.example.tomoto.structure.data.dto.request.UserLoginReq
 import com.example.tomoto.structure.data.dto.request.UserRegisterReq
@@ -11,7 +10,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UserService {
@@ -28,7 +26,7 @@ interface UserService {
     suspend fun levelUpdate(@Body req: LevelUpdateReq) : Response<Unit>
 
     @PATCH("users/challenges")
-    suspend fun challengeUpdate(@Body req: ChallengeUpdateReq) : Response<Unit>
+    suspend fun challengeUpdate(@Body req: List<Boolean>) : Response<Unit>
 
     @PATCH("users/info/bio")
     suspend fun updateUserBio(@Query("newBio") newBio: String)
