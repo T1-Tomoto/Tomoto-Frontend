@@ -63,9 +63,17 @@ class TomotoViewModel : ViewModel() {
     }
 
     fun updateIntroduce(newIntroduce: String) {
-        _userInfo.value = _userInfo.value?.copy(bio = newIntroduce)
-    }
+        viewModelScope.launch {
+            try {
+                ServicePool.userService.updateUserBio(newIntroduce)
+                _userInfo.value = _userInfo.value?.copy(bio = newIntroduce)
 
+                Log.d("TomotoViewModel", "자기소개 업데이트 성공: $newIntroduce")
+            } catch (e: Exception) {
+                Log.e("TomotoViewModel", "자기소개 업데이트 실패: ${e.message}")
+            }
+        }
+    }
     fun incrementPomodoroAndEvaluate(context: Context, timerStreak: Int) {
         val newToday = _todayPomodoro.value + 1
         _todayPomodoro.value = newToday
