@@ -50,10 +50,6 @@ class TomotoViewModel : ViewModel() {
         private set
     var permanentChallenges = mutableStateListOf<Challenge>()
         private set
-    private val permanentChallengeStates = listOf(
-        false, false, false, false, false,
-        false, false, false, false, false, false, false, false
-    )
     private val _userLevel = mutableStateOf(UserLevelState())
     val userLevel: UserLevelState get() = _userLevel.value
 
@@ -118,10 +114,6 @@ class TomotoViewModel : ViewModel() {
             } else {
                 loadDailyChallenges(savedDailyStates)
                 _todayPomodoro.value = ChallengePrefs.loadTodayPomodoro(context)
-            }
-
-            if (permanentChallenges.isEmpty()) {
-                loadPermanentChallenges(permanentChallengeStates)
             }
         }
     }
@@ -259,6 +251,7 @@ class TomotoViewModel : ViewModel() {
                 _userInfo.value = info
                 Log.i("introduce", "bio 값: ${info.bio}")
                 initializeUserLevelFromDb(info.level, info.xp)
+                loadPermanentChallenges(info.challenges)
             } catch (e: Exception) {
                 Log.e("UserInfo", "유저 정보 로딩 실패: ${e.message}")
             }

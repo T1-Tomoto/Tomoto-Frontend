@@ -25,4 +25,7 @@ interface UserService {
     @PATCH("users/level")
     suspend fun levelUpdate(@Body req: LevelUpdateReq) : Response<Unit>
 
+    @PATCH("users/challenges")
+    suspend fun challengeUpdate(@Body req: LevelUpdateReq) : Response<Unit>
+
 }
