@@ -6,5 +6,7 @@ import kotlinx.serialization.Serializable
 data class AllUserRankRes(
     val userId: Long,
     val nickname: String,
-    val level: Int
+    val level: Int,
+    val xp: Int,
+    val bio: String? = null
 )
