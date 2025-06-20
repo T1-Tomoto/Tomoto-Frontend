@@ -177,6 +177,8 @@ class TomotoViewModel : ViewModel() {
     }
 
     private fun loadPermanentChallenges(permanentStates: List<Boolean>) {
+        if(!permanentChallenges.isEmpty()) return
+
         val permanent = ChallengeListFactory.getPermanentChallenges()
         permanentChallenges.addAll(
             permanent.mapIndexed { index, challenge ->
