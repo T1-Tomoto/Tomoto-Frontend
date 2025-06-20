@@ -1,5 +1,6 @@
 package com.example.tomoto.structure.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tomoto.structure.datastructures.AuthViewModel
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
+
 
 @Composable
 fun SignupScreen(
@@ -36,9 +44,16 @@ fun SignupScreen(
     var password by remember { mutableStateOf("") }
     var nickname by remember { mutableStateOf("") }
 
+    // 토마토 색상 팔레트
+    val tomatoRed = Color(0xFFFF6347)
+    val tomatoOrange = Color(0xFFFF8C00)
+    val creamWhite = Color(0xFFFFF8E7)
+    val warmBrown = Color(0xFF8B4513)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(creamWhite)
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -46,38 +61,58 @@ fun SignupScreen(
         Text(
             text = "회원가입",
             style = MaterialTheme.typography.headlineMedium,
+            color = tomatoRed,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
         OutlinedTextField(
             value = id,
             onValueChange = { id = it },
-            label = { Text("ID") },
+            label = { Text("ID", color = warmBrown) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = tomatoRed,
+                unfocusedBorderColor = tomatoOrange,
+                focusedLabelColor = tomatoRed,
+                cursorColor = tomatoRed
+            )
         )
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("PW") },
+            label = { Text("PW", color = warmBrown) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = tomatoRed,
+                unfocusedBorderColor = tomatoOrange,
+                focusedLabelColor = tomatoRed,
+                cursorColor = tomatoRed
+            )
         )
 
         OutlinedTextField(
             value = nickname,
             onValueChange = { nickname = it },
-            label = { Text("닉네임") },
+            label = { Text("닉네임", color = warmBrown) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 32.dp),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = tomatoRed,
+                unfocusedBorderColor = tomatoOrange,
+                focusedLabelColor = tomatoRed,
+                cursorColor = tomatoRed
+            )
         )
 
         Button(
@@ -85,21 +120,33 @@ fun SignupScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = tomatoRed,
+                contentColor = Color.White
+            )
         ) {
-            Text(text = "회원가입 하기")
+            Text(
+                text = "회원가입 하기",
+                fontWeight = FontWeight.Bold
+            )
         }
 
         TextButton(
             onClick = onBackToLogin,
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text("로그인 화면으로 돌아가기")
+            Text(
+                "로그인 화면으로 돌아가기",
+                color = tomatoOrange,
+                fontWeight = FontWeight.Medium
+            )
         }
         if (viewModel.errorMessage.isNotEmpty()) {
             Text(
                 text = viewModel.errorMessage,
-                color = Color.Red,
+                color = tomatoRed,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(8.dp)
             )
         }

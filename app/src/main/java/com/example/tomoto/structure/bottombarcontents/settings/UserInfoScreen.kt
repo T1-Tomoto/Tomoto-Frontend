@@ -31,6 +31,13 @@ import com.example.tomoto.structure.datastructures.TomotoViewModel
 fun UserInfoScreen(
     navController: NavHostController, tomotoViewModel: TomotoViewModel
 ) {
+    // 토마토 색상 팔레트
+    val tomatoRed = Color(0xFFE74C3C)
+    val tomatoOrange = Color(0xFFFF6B47)
+    val creamWhite = Color(0xFFFFF8E7)
+    val warmBrown = Color(0xFF8B4513)
+    val lightTomato = Color(0xFFFFDDD8)
+
     var showDialog by remember { mutableStateOf(false) }
     val userInfo by tomotoViewModel.userInfo.collectAsState()
 
@@ -42,11 +49,13 @@ fun UserInfoScreen(
                 showBackButton = true,
                 onBackClick = { navController.popBackStack() }
             )
-        }
+        },
+        containerColor = creamWhite
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(creamWhite)
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -59,8 +68,8 @@ fun UserInfoScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .border(2.dp, Color.Gray, CircleShape)
-                    .shadow(4.dp, CircleShape)
+                    .border(3.dp, tomatoOrange, CircleShape)
+                    .shadow(6.dp, CircleShape)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -69,7 +78,8 @@ fun UserInfoScreen(
                 text = tomotoViewModel.userName,
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
-                )
+                ),
+                color = warmBrown
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -78,7 +88,7 @@ fun UserInfoScreen(
                 text = "레벨 : ${tomotoViewModel.userLevel.level}",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF666666)
+                    color = tomatoOrange
                 )
             )
 
@@ -91,38 +101,46 @@ fun UserInfoScreen(
                         .clickable { showDialog = true },
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Timer,
                             contentDescription = "총 뽀모도로 횟수 아이콘",
-                            tint = Color(0xFF444444)
+                            tint = tomatoRed
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "현재까지 진행한 뽀모도로 횟수 : ${tomotoViewModel.totalPomodoro}회",
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = warmBrown,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
             } else if (userInfo != null) {
-                Text(
-                    text = "아직 완료한 뽀모도로가 없어요. 첫 뽀모도로를 시작해보세요!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(Color.White, RoundedCornerShape(8.dp))
-                        .padding(16.dp)
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = lightTomato),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Text(
+                        text = "아직 완료한 뽀모도로가 없어요. 첫 뽀모도로를 시작해보세요!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = warmBrown,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(20.dp)
+                    )
+                }
             } else {
                 Text(
                     text = "뽀모도로 정보를 불러오는 중...",
                     style = MaterialTheme.typography.bodyMedium,
+                    color = warmBrown,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
@@ -135,12 +153,14 @@ fun UserInfoScreen(
                     .clickable { showDialog = true },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Text(
                     text = tomotoViewModel.introduce,
-                    modifier = Modifier.padding(20.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    modifier = Modifier.padding(24.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = warmBrown,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
