@@ -14,23 +14,37 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.tomoto.structure.bottombarcontents.settings.uiconponents.ErrorDialog
+import com.example.tomoto.structure.datastructures.AuthViewModel
 
 @Composable
 fun LoginScreen(
+    viewModel: AuthViewModel,
     onLoginClick: (String, String) -> Unit = { _, _ -> },
-    onSignupClick: () -> Unit = {}
+    onSignupClick: () -> Unit = {},
+    errorMessage: String
 ) {
     var id by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage.isNotBlank()) {
+            showDialog = true
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -90,10 +104,17 @@ fun LoginScreen(
             Text(text = "로그인")
         }
     }
-}
-
-@Preview
-@Composable
-private fun LoginScreenPreview() {
-    LoginScreen()
+//    if (viewModel.errorMessage.isNotEmpty()) {
+//        Text(
+//            text = viewModel.errorMessage,
+//            color = Color.Red,
+//            modifier = Modifier.padding(8.dp)
+//        )
+//    }
+    if (showDialog) {
+        ErrorDialog(
+            errorMessage = errorMessage,
+            onDismiss = { showDialog = false }
+        )
+    }
 }

@@ -72,7 +72,10 @@ class TomotoViewModel : ViewModel() {
     }
     fun incrementPomodoroAndEvaluate(context: Context, timerStreak: Int) {
         val newToday = _todayPomodoro.value + 1
+        Log.d("PomodoroCheck", "이전 값: ${_todayPomodoro.value}, 새 값: $newToday")
         _todayPomodoro.value = newToday
+        Log.d("PomodoroCheck", "변경 완료: ${_todayPomodoro.value}")
+
 
         viewModelScope.launch {
             ChallengePrefs.saveTodayPomodoro(context, newToday)
@@ -87,8 +90,9 @@ class TomotoViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                ServicePool.pomoService.addPomodoro()
-                Log.d("PomodoroAPI", "POST /pomos/add 성공")
+                val response = ServicePool.pomoService.addPomodoro()
+                Log.d("PomodoroAPI", "POST /pomos/add 성공, 응답: $response")
+                fetchPomoHistory()
             } catch (e: Exception) {
                 Log.e("PomodoroAPI", "POST /pomos/add 실패: ${e.message}")
             }
@@ -345,6 +349,7 @@ class TomotoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val history = ServicePool.pomoService.getAllPomoHistory()
+                Log.i("pomohistory", "pomo기록 전체: ${history}")
                 _pomoRecords.clear()
                 history.forEach { record ->
                     _pomoRecords.add(record.createdAt.toLocalDate() to record.pomoNum)

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.tomoto.structure.datastructures.AuthViewModel
 import com.example.tomoto.structure.datastructures.TomotoViewModel
 import com.example.tomoto.structure.model.Routes
 import com.example.tomoto.structure.navigation.BottomNavigationBar
@@ -22,7 +23,9 @@ import com.example.tomoto.structure.navigation.NavGraph
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
+fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel(),
+               authViewModel: AuthViewModel = viewModel()
+) {
     val navController = rememberNavController()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -57,7 +60,7 @@ fun MainScreen(tomotoViewModel: TomotoViewModel = viewModel()) {
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding)) {
-            NavGraph(navController, tomotoViewModel)
+            NavGraph(navController, tomotoViewModel,authViewModel)
         }
     }
 }
