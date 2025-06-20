@@ -41,6 +41,10 @@ fun UserInfoScreen(
     var showDialog by remember { mutableStateOf(false) }
     val userInfo by tomotoViewModel.userInfo.collectAsState()
 
+    LaunchedEffect(Unit) {
+        tomotoViewModel.fetchUserInfo()
+    }
+
     Log.i("유저정보", userInfo.toString())
 
     Scaffold(
