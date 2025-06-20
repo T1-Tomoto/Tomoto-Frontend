@@ -128,7 +128,7 @@ fun TimerSettingScreen(
         ) {
             Button(
                 onClick = {
-                    onStartFocus("예시 집중", pomoCount, true)
+                    onStartFocus(task, pomoCount, true)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
             ) {
