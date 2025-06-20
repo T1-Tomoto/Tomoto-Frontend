@@ -1,7 +1,6 @@
 package com.example.tomoto.structure.navigation
 
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -9,90 +8,76 @@ import androidx.navigation.compose.composable
 import com.example.tomoto.structure.auth.LoginScreen
 import com.example.tomoto.structure.auth.SignupScreen
 import com.example.tomoto.structure.auth.token.TokenManager
-import com.example.tomoto.structure.bottombarcontents.rank.FriendNavGraph
 import com.example.tomoto.structure.bottombarcontents.rank.MainScreenFriend
-import com.example.tomoto.structure.bottombarcontents.rank.Rank
 import com.example.tomoto.structure.bottombarcontents.settings.ChallengeListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.MusicListScreen
 import com.example.tomoto.structure.bottombarcontents.settings.Settings
 import com.example.tomoto.structure.bottombarcontents.settings.UserInfoScreen
-import com.example.tomoto.structure.data.dto.request.UserLoginReq
-import com.example.tomoto.structure.data.dto.request.UserRegisterReq
 import com.example.tomoto.structure.model.Routes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.example.tomoto.structure.bottombarcontents.timer.TimerNavGraph
 import com.example.tomoto.structure.bottombarcontents.todolist.ToDoScreenWithCalendarComposable2
-import com.example.tomoto.structure.data.service.ServicePool
+import com.example.tomoto.structure.datastructures.AuthViewModel
 import com.example.tomoto.structure.datastructures.TomotoViewModel
 
 
 @Composable
-fun NavGraph(navController: NavHostController, tomotoViewModel: TomotoViewModel) {
+fun NavGraph(
+    navController: NavHostController,
+    tomotoViewModel: TomotoViewModel,
+    authViewModel: AuthViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = Routes.Login.route
     ) {
-
         composable(Routes.Login.route) {
             LoginScreen(
+                viewModel = authViewModel,
                 onLoginClick = { id, pw ->
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val res = ServicePool.userService.login(
-                                UserLoginReq(id, pw)
-                            )
-                            Log.d("login", "accessToken = ${res.accessToken}")
+                    authViewModel.login(id, pw) { accessToken ->
+                        // 로그인 성공 시 실행될 코드
+                        TokenManager.setAccessToken(accessToken)
+                        Log.d("NavGraph", "로그인 성공! 토큰 저장됨: $accessToken")
 
-                            TokenManager.setAccessToken(res.accessToken)
-
-                            withContext(Dispatchers.Main) {
-                                navController.navigate(Routes.Timer.route) {
-                                    popUpTo(Routes.Login.route) { inclusive = true }
-                                }
-                                tomotoViewModel.loadDataAfterLogin()
-                            }
-                        } catch (e: Exception) {
-                            Log.e("login", "로그인 실패: ${e.message}")
+                        navController.navigate(Routes.Timer.route) {
+                            popUpTo(Routes.Login.route) { inclusive = true }
                         }
+                        tomotoViewModel.loadDataAfterLogin()
                     }
                 },
                 onSignupClick = {
                     navController.navigate(Routes.Signup.route)
-                }
+                },
+                errorMessage = authViewModel.errorMessage // 에러 메시지 전달
             )
         }
 
         composable(Routes.Signup.route) {
             SignupScreen(
+                viewModel = authViewModel,
                 onSignupClick = { id, pw, nickname ->
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val res = ServicePool.userService.signup(
-                                UserRegisterReq(id, pw, nickname)
-                            )
-                            Log.d("signup", "토큰: ${res.accessToken}")
+                    authViewModel.signup(id, pw, nickname) { accessToken ->
+                        // 회원가입 성공 시 실행될 코드
+                        TokenManager.setAccessToken(accessToken)
+                        Log.d("NavGraph", "회원가입 성공! 토큰 저장됨: $accessToken")
 
-                            withContext(Dispatchers.Main) {
-                                navController.navigate(Routes.Login.route)
-                            }
-                        } catch (e: Exception) {
-                            Log.e("signup", "회원가입 실패: ${e.message}")
+                        navController.navigate(Routes.Timer.route) {
+                            popUpTo(Routes.Signup.route) { inclusive = true }
                         }
+                        tomotoViewModel.loadDataAfterLogin()
                     }
                 },
                 onBackToLogin = {
+                    authViewModel.clearErrorMessage()
                     navController.popBackStack()
-                }
+                },
+                errorMessage = authViewModel.errorMessage
             )
         }
 
-        composable(Routes.Timer.route) { TimerNavGraph(viewModel=tomotoViewModel) }
+        composable(Routes.Timer.route) { TimerNavGraph(viewModel = tomotoViewModel) }
         composable(Routes.TodoList.route) { ToDoScreenWithCalendarComposable2(tomotoViewModel = tomotoViewModel) }
         composable(Routes.Rank.route) { MainScreenFriend() }
-
         composable(Routes.Settings.route) {
             Settings(
                 tomotoViewModel = tomotoViewModel,

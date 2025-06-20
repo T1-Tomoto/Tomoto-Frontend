@@ -1,7 +1,6 @@
 package com.example.tomoto.structure.datastructures
 
 import UserLevelState
-import android.app.Service
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
@@ -16,9 +15,10 @@ import com.example.tomoto.structure.bottombarcontents.todolist.ToDoItem
 import com.example.tomoto.structure.data.dto.request.AddFriendReq
 import com.example.tomoto.structure.data.dto.request.AddTodoReq
 import com.example.tomoto.structure.data.dto.request.LevelUpdateReq
+import com.example.tomoto.structure.data.dto.request.UpdateMusicReq
+import com.example.tomoto.structure.data.dto.response.MusicListRes
 import com.example.tomoto.structure.data.dto.response.UserInfoRes
 import com.example.tomoto.structure.data.service.ServicePool
-import com.example.tomoto.structure.data.service.UserService
 import com.example.tomoto.structure.model.Challenge
 import com.example.tomoto.structure.model.ChallengeListFactory
 import com.example.tomoto.structure.model.LevelConfig
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class TomotoViewModel : ViewModel() {
@@ -44,18 +43,15 @@ class TomotoViewModel : ViewModel() {
 
     var friendList = mutableStateListOf<Friend>()
         private set
-    var musicList = mutableStateListOf<String>()
-        private set
     var dailyChallenges = mutableStateListOf<Challenge>()
         private set
     var permanentChallenges = mutableStateListOf<Challenge>()
         private set
-    private val permanentChallengeStates = listOf(
-        false, false, false, false, false,
-        false, false, false, false, false, false, false, false
-    )
     private val _userLevel = mutableStateOf(UserLevelState())
     val userLevel: UserLevelState get() = _userLevel.value
+
+    private val _musicList = MutableStateFlow<List<String>>(emptyList())
+    val musicList: StateFlow<List<String>> = _musicList
 
     fun logIntroduceInfo() {
         Log.i("introduce", "userInfo.value?.bio: ${userInfo.value?.bio}")
@@ -63,18 +59,29 @@ class TomotoViewModel : ViewModel() {
     }
 
     fun updateIntroduce(newIntroduce: String) {
-        _userInfo.value = _userInfo.value?.copy(bio = newIntroduce)
-    }
+        viewModelScope.launch {
+            try {
+                ServicePool.userService.updateUserBio(newIntroduce)
+                _userInfo.value = _userInfo.value?.copy(bio = newIntroduce)
 
+                Log.d("TomotoViewModel", "자기소개 업데이트 성공: $newIntroduce")
+            } catch (e: Exception) {
+                Log.e("TomotoViewModel", "자기소개 업데이트 실패: ${e.message}")
+            }
+        }
+    }
     fun incrementPomodoroAndEvaluate(context: Context, timerStreak: Int) {
         val newToday = _todayPomodoro.value + 1
+        Log.d("PomodoroCheck", "이전 값: ${_todayPomodoro.value}, 새 값: $newToday")
         _todayPomodoro.value = newToday
+        Log.d("PomodoroCheck", "변경 완료: ${_todayPomodoro.value}")
+
 
         viewModelScope.launch {
             ChallengePrefs.saveTodayPomodoro(context, newToday)
         }
 
-        evaluateDailyChallenges(context, pomodoroCount = newToday)
+        evaluateDailyChallenges(context, timerStreak, pomodoroCount = newToday)
         evaluatePermanentChallenges(
             pomodoroTotal = totalPomodoro,
             timerStreak = timerStreak,
@@ -83,24 +90,62 @@ class TomotoViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                ServicePool.pomoService.addPomodoro()
-                Log.d("PomodoroAPI", "POST /pomos/add 성공")
+                val response = ServicePool.pomoService.addPomodoro()
+                Log.d("PomodoroAPI", "POST /pomos/add 성공, 응답: $response")
+                fetchPomoHistory()
             } catch (e: Exception) {
                 Log.e("PomodoroAPI", "POST /pomos/add 실패: ${e.message}")
             }
         }
     }
 
+    fun fetchMusicList() {
+        viewModelScope.launch {
+            try {
+                val fetchedList: List<MusicListRes> = ServicePool.musicService.getMusicList()
+                _musicList.value = fetchedList.map { it.url }
+                Log.d("MusicList", "음악 목록 불러오기 성공: $musicList")
+            } catch (e: Exception) {
+                Log.e("MusicList", "음악 목록 불러오기 실패: ${e.message}")
+            }
+        }
+    }
+
+
     fun addMusicUrl(url: String) {
-        MusicManager.addMusicUrl(musicList, url)
+        viewModelScope.launch {
+            try {
+                ServicePool.musicService.addMusic(url)
+                fetchMusicList() // 추가 후 목록 갱신
+                Log.d("MusicList", "음악 추가 성공: $url")
+            } catch (e: Exception) {
+                Log.e("MusicList", "음악 추가 실패: ${e.message}")
+            }
+        }
     }
 
     fun removeMusicUrl(url: String) {
-        MusicManager.removeMusicUrl(musicList, url)
+        viewModelScope.launch {
+            try {
+                ServicePool.musicService.deleteMusic(url)
+                fetchMusicList() // 삭제 후 목록 갱신
+                Log.d("MusicList", "음악 삭제 성공: $url")
+            } catch (e: Exception) {
+                Log.e("MusicList", "음악 삭제 실패: ${e.message}")
+            }
+        }
     }
-
     fun editMusicUrl(oldUrl: String, newUrl: String) {
-        MusicManager.editMusicUrl(musicList, oldUrl, newUrl)
+        viewModelScope.launch {
+            try {
+                val request = UpdateMusicReq(oldUrl, newUrl)
+                ServicePool.musicService.updateMusic(request) // 함수명 오타: updatdMusic -> updateMusic으로 수정 권장
+                fetchMusicList() // 수정 후 목록 갱신
+                Log.d("MusicList", "음악 수정 성공: $oldUrl -> $newUrl")
+            } catch (e: Exception) {
+                Log.e("MusicList", "음악 수정 실패: ${e.message}")
+            }
+        }
     }
 
     fun initializeChallenges(context: Context) {
@@ -118,10 +163,6 @@ class TomotoViewModel : ViewModel() {
             } else {
                 loadDailyChallenges(savedDailyStates)
                 _todayPomodoro.value = ChallengePrefs.loadTodayPomodoro(context)
-            }
-
-            if (permanentChallenges.isEmpty()) {
-                loadPermanentChallenges(permanentChallengeStates)
             }
         }
     }
@@ -172,25 +213,26 @@ class TomotoViewModel : ViewModel() {
         _userLevel.value = UserLevelState.fromDatabase(level, xp)
     }
 
-    fun evaluateDailyChallenges(context: Context, pomodoroCount: Int) {
+    fun evaluateDailyChallenges(context: Context, timerStreak: Int,pomodoroCount: Int) {
         ChallengeManager.checkDailyChallengesAfterTimer(
             context = context,
             scope = viewModelScope,
             dailyChallenges = dailyChallenges,
             userLevel = userLevel,
             pomodoroCount = pomodoroCount,
-            viewModel = this
+            viewModel = this,
+            timerStreak = timerStreak
         )
     }
 
     fun evaluatePermanentChallenges(pomodoroTotal: Int, timerStreak: Int, totalCompleted: Int) {
         ChallengeManager.checkPermanentChallenges(
             permanentChallenges = permanentChallenges,
-            userLevel = userLevel,
             pomodoroTotal = pomodoroTotal,
             timerStreak = timerStreak,
             totalCompleted = totalCompleted,
-            viewModel = this
+            viewModel = this,
+            scope = viewModelScope
         )
     }
 
@@ -259,6 +301,7 @@ class TomotoViewModel : ViewModel() {
                 _userInfo.value = info
                 Log.i("introduce", "bio 값: ${info.bio}")
                 initializeUserLevelFromDb(info.level, info.xp)
+                loadPermanentChallenges(info.challenges)
             } catch (e: Exception) {
                 Log.e("UserInfo", "유저 정보 로딩 실패: ${e.message}")
             }
@@ -306,6 +349,7 @@ class TomotoViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val history = ServicePool.pomoService.getAllPomoHistory()
+                Log.i("pomohistory", "pomo기록 전체: ${history}")
                 _pomoRecords.clear()
                 history.forEach { record ->
                     _pomoRecords.add(record.createdAt.toLocalDate() to record.pomoNum)

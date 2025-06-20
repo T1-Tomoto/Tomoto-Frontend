@@ -13,8 +13,6 @@ object ChallengeListFactory {
     )
 
     fun getPermanentChallenges(): List<Challenge> = listOf(
-        Challenge("작은 습관의 시작", "3일 연속 집중 타이머 사용", true),
-        Challenge("일주일의 루틴", "7일 연속 접속"),
         Challenge("연속 집중 2단계", "연속으로 2회 집중 타이머 실행"),
         Challenge("연속 집중 4단계", "연속으로 4회 집중 타이머 실행"),
         Challenge("연속 집중 6단계", "연속으로 6회 집중 타이머 실행"),
