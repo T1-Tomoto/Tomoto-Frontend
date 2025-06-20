@@ -3,9 +3,12 @@ package com.example.tomoto.structure.navigation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -13,8 +16,18 @@ import com.example.tomoto.structure.model.NavBarItems
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
+    // 토마토 색상 팔레트
+    val tomatoRed = Color(0xFFE74C3C)
+    val tomatoOrange = Color(0xFFFF6B47)
+    val creamWhite = Color(0xFFFFF8E7)
+    val warmBrown = Color(0xFF8B4513)
+    val lightTomato = Color(0xFFFFDDD8)
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = creamWhite,
+        contentColor = warmBrown,
+        tonalElevation = 0.dp
+    ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
 
@@ -38,9 +51,15 @@ fun BottomNavigationBar(navController: NavController) {
                 },
                 label = {
                     Text(text = navItem.title)
-                }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = tomatoRed,
+                    selectedTextColor = tomatoRed,
+                    indicatorColor = lightTomato,
+                    unselectedIconColor = warmBrown,
+                    unselectedTextColor = warmBrown
+                )
             )
         }
     }
-
 }
