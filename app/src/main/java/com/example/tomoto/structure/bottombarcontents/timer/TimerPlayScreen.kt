@@ -94,7 +94,7 @@ fun TimerPlayScreen(
                         isPlaying = false
                         onCancel()
                     }
-                    focusStreak = 0
+//                    focusStreak = 0
                 }
             }
         }
